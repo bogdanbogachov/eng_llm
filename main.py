@@ -1,5 +1,5 @@
-from question_answer_gen import populate
+from question_answer import populate
 
 
 if __name__ == '__main__':
-    populate('srm.pdf')
+    populate('question_answer/srm.pdf')
