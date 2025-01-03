@@ -110,6 +110,6 @@ def read_doc(file):
             chapter = title
 
     df = pd.DataFrame(final)
-    df.to_csv('split_srm.csv', index=False)
+    df.to_csv('pdf_reader/split_srm.csv', index=False)
 
     return df
