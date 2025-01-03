@@ -63,9 +63,8 @@ def generate(text):
     return questions
 
 
-def populate():
-    df = read_doc('srm.pdf')
-    df.to_csv('split_srm.csv', index=False)
+def populate(file):
+    df = read_doc(file)
     index_to_start_qa_gen = 0
 
     # Check if the file exists
@@ -142,5 +141,3 @@ def populate():
             logger.info(40*'-')
 
     return None
-
-populate()
