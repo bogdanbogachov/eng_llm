@@ -2,19 +2,11 @@ from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
 from .pdf_reader import read_doc
-from logging_config import setup_logger
+from logging_config import logger
+from config import CONFIG
 import json
-import yaml
 import math
 import os
-
-
-# Load config parameters
-with open('config.yaml') as f:
-    config = yaml.safe_load(f)
-
-# Initialize the logger
-logger = setup_logger()
 
 
 def generate(text):
@@ -25,13 +17,13 @@ def generate(text):
         Returns:
             - a tuple with all generated questions.
     """
-    api_key = config['api_key']
-    model_id = config['model_id']
-    system_prompt = config['system_prompt']
-    query_prompt = config["query_prompt"]
-    max_new_tokens = config['max_new_tokens']
-    seed = config['seed']
-    temperature = config['temperature']
+    api_key = CONFIG['api_key']
+    model_id = CONFIG['model_id']
+    system_prompt = CONFIG['system_prompt']
+    query_prompt = CONFIG["query_prompt"]
+    max_new_tokens = CONFIG['max_new_tokens']
+    seed = CONFIG['seed']
+    temperature = CONFIG['temperature']
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 
     login(api_key)

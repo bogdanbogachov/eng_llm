@@ -2,44 +2,30 @@ from langgraph.graph import StateGraph, START, END
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from huggingface_hub import InferenceClient
 from huggingface_hub import login
-from logging_config import setup_logger
-import yaml
+from config import CONFIG
+from logging_config import logger
+import json
 
 
-# Load config parameters
-with open('config.yaml') as f:
-    config = yaml.safe_load(f)
-
-# Initialize the logger
-logger = setup_logger()
-
-
-# Step 1: Load LLaMA Model and Tokenizer
-api_key = config['api_key']
-model_id = config['model_id']
-inference_prompt = config['inference_prompt']
-max_new_tokens = config['max_new_tokens']
-seed = config['seed']
-temperature = config['temperature']
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-
-login(api_key)
-client = InferenceClient()
-
-# Function to generate responses using the LLaMA model
 def generate_response(prompt):
+    """
+    Function to generate responses using the LLaMA model
+    """
     messages = [
-        {"role": "system", "content": inference_prompt},
+        {"role": "system", "content": CONFIG['inference_prompt']},
         {"role": "user", "content": prompt}
     ]
 
+    login(CONFIG['api_key'])
+    client = InferenceClient()
+    tokenizer = AutoTokenizer.from_pretrained(CONFIG['model_id'])
     total = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     llm_response = client.text_generation(
         total,
-        model=model_id,
-        max_new_tokens=max_new_tokens,
-        seed=seed,
-        temperature=temperature
+        model=CONFIG['model_id'],
+        max_new_tokens=CONFIG['max_new_tokens'],
+        seed=CONFIG['seed'],
+        temperature=CONFIG['temperature']
     )
     return llm_response
 
@@ -53,7 +39,6 @@ def task_analysis_node(state):
         f"Return the category only."
     )
     response = generate_response(prompt)
-    print(response)
     state["category"] = response.strip().lower()
     return state
 
@@ -92,16 +77,12 @@ def routing_function(state):
     """Route based on the category identified in the task analysis."""
     category = state.get("category")
     if category == "mechanical":
-        print('mech')
         return "mechanical"
     elif category == "electrical":
-        print('electro')
         return "electrical"
     elif category in ["general", "software"]:
-        print('general')
         return "general"
     else:
-        print('oops')
         return END
 
 graph_builder.add_edge(START, "task_analysis")
@@ -114,9 +95,27 @@ graph_builder.add_edge("general", END)
 graph = graph_builder.compile()
 
 # Step 4: Execute the Graph
-def ask_engineering_question(question):
+def ask_slg(file, inference_model):
     """Run the graph for a user question."""
-    initial_state = {"question": question}
-    print('initial state set')
-    result = graph.invoke(initial_state)
-    return result.get("answer")
+    # Step 1: Read the original JSON file
+    with open(file, 'r') as f:
+        data = json.load(f)
+
+    # Step 2: Process the data
+    answers_list = []
+    for item in data:
+        initial_state = {"question": item['question']}
+        result = graph.invoke(initial_state)
+
+        new_dict = {
+            "chapter": item['chapter'],
+            "title": item['title'],
+            "question": item['question'],
+            "answer": result.get("answer")
+        }
+        answers_list.append(new_dict)
+
+    with open(f'answers/{inference_model}.json', 'w') as f:
+        json.dump(answers_list, f, indent=4)
+
+    return None
