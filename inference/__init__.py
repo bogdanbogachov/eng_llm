@@ -1,2 +1,2 @@
-from .slg import ask_slg
+from .slg import SmallLanguageGraph
 from .baseline import ask_baseline, ask_baseline_finetuned, AskRag
