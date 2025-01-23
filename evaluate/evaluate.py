@@ -7,6 +7,7 @@ from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
 
+logger.propagate = False
 
 def load_data(predictions_file, ground_truth_file):
     """
@@ -77,7 +78,10 @@ def calculate_ai_expert(reference, candidate):
         temperature=temperature
     )
 
-    return int(llm_response)
+    try:
+        return int(llm_response)
+    except Exception:
+        return 0
 
 
 def evaluate(predictions, ground_truth):
@@ -88,7 +92,6 @@ def evaluate(predictions, ground_truth):
     rouge_scores = {'rouge1': [], 'rouge2': [], 'rougeL': []}
     exact_matches = []
     ai_experts = []
-
     for pred, truth in zip(predictions, ground_truth):
         if pred['question'] != truth['question']:
             logger.info(f"Warning: questions didn't match at chapter: {pred['chapter']}, and title: {pred['title']}")
@@ -101,18 +104,22 @@ def evaluate(predictions, ground_truth):
         pred_answer = pred['answer']
 
         # BLEU
+        logger.info("Calculating BLEU score.")
         bleu = calculate_bleu(gt_answer, pred_answer)
         bleu_scores.append(bleu)
 
         # ROUGE
+        logger.info("Calculating ROUGE score.")
         rouge = calculate_rouge(gt_answer, pred_answer)
         for key in rouge_scores.keys():
             rouge_scores[key].append(rouge[key].fmeasure)
 
         # Exact Match
+        logger.info("Calculating Exact Match (EM) score.")
         exact_matches.append(calculate_exact_match(gt_answer, pred_answer))
 
         # AI expert
+        logger.info("Calculating AI expert score.")
         ai_expert = calculate_ai_expert(gt_answer, pred_answer)
         ai_experts.append(ai_expert)
 
@@ -121,6 +128,8 @@ def evaluate(predictions, ground_truth):
     avg_rouge = {key: sum(rouge_scores[key]) / len(rouge_scores[key]) for key in rouge_scores.keys()}
     exact_match_score = sum(exact_matches) / len(exact_matches) if exact_matches else 0
     ai_expert_score = sum(ai_experts) / len(ai_experts) if ai_experts else 0
+    logger.info(f"Evaluation has been completed.")
+    logger.info(40*'-')
 
     return {
         "BLEU": avg_bleu,
