@@ -1,9 +1,13 @@
 from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
+from sklearn.model_selection import train_test_split
+
 from .pdf_reader import read_doc
 from logging_config import logger
 from config import CONFIG
+
+from collections import defaultdict
 import json
 import math
 import os
@@ -131,5 +135,50 @@ def populate(file_to_read):
                     json_file.truncate()  # Remove any leftover content
 
             logger.info(40*'-')
+
+    return None
+
+
+def split_train_test(data_file):
+    # Load JSON file
+    logger.info(f"Splitting {data_file} into train and test sets.")
+    with open(data_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Split data into train and test sets (80% train, 20% test)
+    train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+
+    # Save train and test data
+    with open("question_answer/qa_train.json", "w", encoding="utf-8") as f:
+        json.dump(train_data, f, indent=4)
+
+    with open("question_answer/qa_test.json", "w", encoding="utf-8") as f:
+        json.dump(test_data, f, indent=4)
+
+    logger.info("Train and test splitting is complete.")
+
+    return None
+
+
+def split_qa_pairs_by_title(data_file):
+    # Load the JSON data
+    logger.info(f"Splitting {data_file} by title.")
+    with open(data_file, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    # Group entries by unique "title"
+    grouped_data = defaultdict(list)
+    for entry in data:
+        grouped_data[entry["title"]].append(entry)
+
+    # Save each group as a separate JSON file
+    for title, entries in grouped_data.items():
+        # Create a valid filename by replacing spaces and special characters
+        filename = f"{title.replace(' ', '_').replace('/', '_').lower()}.json"
+
+        with open(f"question_answer/split_by_title/{filename}", "w", encoding="utf-8") as file:
+            json.dump(entries, file, indent=4, ensure_ascii=False)
+
+    logger.info(f"Title splitting is complete.")
 
     return None
