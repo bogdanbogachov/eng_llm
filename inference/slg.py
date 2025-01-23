@@ -25,7 +25,7 @@ class SmallLanguageGraph:
 
         login(CONFIG['api_key'])
         client = InferenceClient()
-        tokenizer = AutoTokenizer.from_pretrained(CONFIG['model_id'])
+        tokenizer = AutoTokenizer.from_pretrained(CONFIG['task_categorizer'])
         total = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         llm_response = client.text_generation(
             total,
