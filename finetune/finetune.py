@@ -2,6 +2,7 @@ from huggingface_hub import InferenceClient
 from huggingface_hub import login
 
 import torch
+import os
 from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments
 from huggingface_hub import notebook_login
 from datasets import load_dataset
@@ -96,6 +97,7 @@ def finetune_slg_node(node, data, experiment_number):
     trainer.train()
 
     # Save the model and tokenizer
+    os.makedirs(f'experiments/{experiment_number}', exist_ok=True)
     trainer.save_model(f"experiments/{experiment_number}/finetuned_{node}")
 
     return None

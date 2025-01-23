@@ -33,6 +33,7 @@ if __name__ == '__main__':
     for experiment in [1]:
         # Finetune
         if args.finetune:
+            os.makedirs('experiments', exist_ok=True)
             for file in os.listdir("question_answer/split_by_title"):
                 finetune_slg_node(
                     node=os.path.splitext(file)[0],
@@ -41,6 +42,7 @@ if __name__ == '__main__':
 
         # Infer baseline
         if args.infer_baseline:
+            os.makedirs('answers', exist_ok=True)
             ask_baseline(file='question_answer/qa_test.json')
             ask_baseline_finetuned(file='question_answer/qa_test.json')
             rag = AskRag(
@@ -50,6 +52,7 @@ if __name__ == '__main__':
 
         # Infer slg
         if args.infer_slg:
+            os.makedirs('answers', exist_ok=True)
             slg = SmallLanguageGraph(experts_location=experiment)
             slg.ask_slg(
                 file='question_answer/qa_test.json',
