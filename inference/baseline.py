@@ -52,6 +52,7 @@ def ask_baseline(file):
     """
     Generates a response by baseline model.
     """
+    logger.info("Asking baseline.")
     model = CONFIG['model_1']
     answers = ask(model, file)
 
@@ -65,6 +66,7 @@ def ask_baseline_finetuned(file):
     """
     Generates a response by finetuned baseline model.
     """
+    logger.info("Asking baseline finetuned.")
     model = CONFIG['model_2']
     answers = ask(model, file)
 
@@ -86,7 +88,7 @@ class AskRag:
         """
         Retrieves documents from passed in question-answer pairs file.
         """
-
+        logger.info("Asking RAG.")
         with open(self.documents_file, 'r') as file:
             data = json.load(file)
 
