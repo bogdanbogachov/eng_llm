@@ -3,8 +3,8 @@ import logging
 
 def setup_logger(name="text_tuning"):
     # Create a logger with the given name
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    log = logging.getLogger(name)
+    log.setLevel(logging.INFO)
 
     # Create a console handler and set the level to debug
     ch = logging.StreamHandler()
@@ -20,9 +20,9 @@ def setup_logger(name="text_tuning"):
     fh.setFormatter(formatter)
 
     # Add the handler to the logger
-    logger.addHandler(ch)
-    logger.addHandler(fh)
+    log.addHandler(ch)
+    log.addHandler(fh)
 
-    return logger
+    return log
 
 logger = setup_logger()
