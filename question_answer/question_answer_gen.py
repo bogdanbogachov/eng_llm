@@ -176,6 +176,7 @@ def split_qa_pairs_by_title(data_file):
         # Create a valid filename by replacing spaces and special characters
         filename = f"{title.replace(' ', '_').replace('/', '_').lower()}.json"
 
+        os.makedirs('question_answer/split_by_title', exist_ok=True)
         with open(f"question_answer/split_by_title/{filename}", "w", encoding="utf-8") as file:
             json.dump(entries, file, indent=4, ensure_ascii=False)
 
