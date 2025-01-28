@@ -1,1 +1,1 @@
-from .finetune import finetune_slg_node
+from .finetune import finetune
