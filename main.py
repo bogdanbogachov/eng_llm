@@ -1,9 +1,9 @@
 from config import CONFIG
 from question_answer import populate, split_qa_pairs_by_title, split_train_test
 from evaluate import load_data, evaluate
-from inference import SmallLanguageGraph, ask_baseline, ask_baseline_finetuned, AskRag
+from inference import SmallLanguageGraph, ask_baseline, ask_finetuned, AskRag
 from download_llama import download
-from finetune import finetune_slg_node
+from finetune import finetune
 import argparse
 import json
 import os
@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
     # Download models
     if args.download_models:
-        download("meta-llama/Llama-3.2-1B-Instruct", "local_llama_model_1")
+        download(model_name=CONFIG['3_2_1b'], save_directory='downloaded_3_2_1b')
+        download(model_name=CONFIG['3_1_8b'], save_directory='downloaded_3_1_8b')
 
     # Question-answers
     if args.create_qa:
