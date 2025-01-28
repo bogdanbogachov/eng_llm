@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument("--evaluate", type=bool, default=False)
     parser.add_argument("--infer_slg", type=bool, default=False)
     parser.add_argument("--infer_baseline", type=bool, default=False)
+    parser.add_argument("--infer_finetuned", type=bool, default=False)
     parser.add_argument("--download_models", type=bool, default=False)
     parser.add_argument("--finetune", type=bool, default=False)
     args = parser.parse_args()
@@ -34,6 +35,7 @@ if __name__ == '__main__':
         split_train_test('question_answer/qa_pairs_test.json')
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
+    # Experiments
     for experiment in [1]:
         # Finetune
         if args.finetune:
@@ -69,19 +71,23 @@ if __name__ == '__main__':
         # Infer baseline
         if args.infer_baseline:
             os.makedirs(f'answers/{experiment}', exist_ok=True)
-
             ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_2_1b'], experiment=experiment)
             ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_1_8b'], experiment=experiment)
-
-            ask_finetuned(file='question_answer/qa_test.json', model='finetuned_3_2_1b', experiment=experiment)
-            ask_finetuned(file='question_answer/qa_test.json', model='finetuned_3_1_8b', experiment=experiment)
-
             ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_3_70b'], experiment=experiment)
             rag = AskRag(
                 documents_file='question_answer/qa_train.json',
                 questions_file='question_answer/qa_test.json',
                 experiment=experiment)
             rag.generate_responses()
+
+        if args.infer_finetuned:
+            os.makedirs(f'answers/{experiment}', exist_ok=True)
+            ask_finetuned(file='question_answer/qa_test.json',
+                          model=f'experiments/{experiment}/finetuned_3_2_1b',
+                          experiment=experiment)
+            ask_finetuned(file='question_answer/qa_test.json',
+                          model=f'experiments/{experiment}/finetuned_3_1_8b',
+                          experiment=experiment)
 
         # Infer slg
         if args.infer_slg:
@@ -96,7 +102,8 @@ if __name__ == '__main__':
             metrics_list = []
             ground_truth_file = "question_answer/qa_test.json"
             for predictions_file in os.listdir(f"answers/{experiment}"):
-                predictions, ground_truth = load_data(f'answers/{predictions_file}', ground_truth_file)
+                predictions, ground_truth = load_data(f'answers/{experiment}/{predictions_file}',
+                                                      ground_truth_file)
                 results = evaluate(predictions, ground_truth)
                 new_dict = {os.path.splitext(predictions_file)[0]: results}
                 metrics_list.append(new_dict)
