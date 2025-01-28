@@ -13,6 +13,7 @@ if __name__ == '__main__':
     # Arguments parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--create_qa", type=bool, default=False)
+    parser.add_argument("--split_qa", type=bool, default=False)
     parser.add_argument("--evaluate", type=bool, default=False)
     parser.add_argument("--infer_slg", type=bool, default=False)
     parser.add_argument("--infer_baseline", type=bool, default=False)
@@ -28,7 +29,9 @@ if __name__ == '__main__':
     # Question-answers
     if args.create_qa:
         populate(file_to_read='question_answer/srm.pdf')
-        split_train_test('question_answer/qa_pairs.json')
+
+    if args.split_qa:
+        split_train_test('question_answer/qa_pairs_test.json')
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     for experiment in [1]:
@@ -92,7 +95,7 @@ if __name__ == '__main__':
         if args.evaluate:
             metrics_list = []
             ground_truth_file = "question_answer/qa_test.json"
-            for predictions_file in os.listdir("answers"):
+            for predictions_file in os.listdir(f"answers/{experiment}"):
                 predictions, ground_truth = load_data(f'answers/{predictions_file}', ground_truth_file)
                 results = evaluate(predictions, ground_truth)
                 new_dict = {os.path.splitext(predictions_file)[0]: results}
