@@ -53,7 +53,7 @@ def calculate_ai_expert(reference, candidate):
     Calculate AI expert scores between a reference and a candidate answer.
     """
     api_key = CONFIG['api_key']
-    model_id = CONFIG['model_id']
+    model_id = CONFIG['3_3_70b']
     ai_expert_prompt = CONFIG['ai_expert_prompt']
     query_expert_prompt = CONFIG["query_expert_prompt"]
     max_new_tokens = CONFIG['max_new_tokens']
