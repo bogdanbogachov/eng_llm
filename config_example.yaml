@@ -1,0 +1,51 @@
+# Hugging Face
+api_key: 'key'
+
+# HF call model parameters
+max_new_tokens: 750
+seed: 42
+temperature: 0.5
+
+# Question-answer creation prompts
+system_prompt: >
+  You are an expert in Aerospace Engineering and you are tasked to read text and create questions for this text.
+query_prompt: >
+  # Please create a question for the following text: {text}.
+  # Adhere to the following rules:
+  - make sure to include context in the question,
+  - make the text used to create the question has an answer to the created question,
+  - don't specify the answer in your response,
+  - if text is all in capital letters and consists of not more than 8 words, it is most likely a title, 
+  - here is list of previously created questions:
+  {questions}, make sure the new question differs from the previous ones.
+  
+  # Return only the created question.
+
+# AI expert evaluation prompt
+ai_expert_prompt: >
+  You are an expert in Aerospace Engineering and you are tasked to read two texts and make a verdict if the second
+  text is similar enough to be considered the same.
+query_expert_prompt: >
+  # Please read the following 2 texts:
+  - {text_1}
+  - {text_2}
+  # Please evaluate how similar the second text is to the first one.
+  # Please return "1" if similar and "0" if not. Don't ever return anything else but these two binary ints: 1 or 0!
+
+# Inference prompts
+inference_prompt: You are an excellent assistant in Aerospace Engineering!
+
+# Rag prompt
+rag_prompt: >
+  Please provide an answer to the following query based on the provide context. Don't change the original text,
+  unless it is required to adjust numbers (rivet sizes, diameters, etc.)
+
+# Models
+3_2_1b: "meta-llama/Llama-3.2-1B-Instruct"
+3_1_8b: "meta-llama/Llama-3.1-8B-Instruct"
+3_3_70b: "meta-llama/Llama-3.3-70B-Instruct"
+retrieval_model: "all-MiniLM-L6-v2"
+task_categorizer: "meta-llama/Llama-3.1-8B-Instruct"
+
+# Directories
+experiments: 'experiments'
