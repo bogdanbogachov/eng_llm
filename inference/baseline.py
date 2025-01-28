@@ -23,6 +23,7 @@ def ask(inference_model, file):
 
     answers_list = []
     for item in data:
+        logger.debug('Iterating...')
         messages = [
             {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": item['question']}
@@ -52,7 +53,7 @@ def ask_baseline(file, model, experiment):
     """
     Generates a response by baseline model.
     """
-    logger.info("Asking baseline.")
+    logger.info(f"Asking baseline model: {model}.")
     answers = ask(model, file)
 
     with open(f"answers/{experiment}/{model.split('/')[-1]}.json", 'w') as f:
@@ -69,19 +70,18 @@ def ask_finetuned(file, model, experiment):
         data = json.load(f)
 
     answers = []
+    logger.info(f"Model used to infer: {model}")
     for item in data:
         messages = [
             {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": item['question']}
         ]
 
-        model_id = model
-        logger.info(f"Model used to infer: {model_id}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
 
         pipe = pipeline(
             "text-generation",
-            model=model_id,
+            model=model,
             device_map="auto",
         )
 
