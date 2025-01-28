@@ -1,5 +1,5 @@
 from huggingface_hub import InferenceClient
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, pipeline
 from huggingface_hub import login
 from logging_config import logger
 from config import CONFIG
@@ -9,7 +9,7 @@ import numpy as np
 import json
 
 
-def ask(inference_model, file, input_text=None):
+def ask(inference_model, file):
     """
     Generic flow to ask LLM questions.
     """
@@ -48,30 +48,60 @@ def ask(inference_model, file, input_text=None):
     return answers_list
 
 
-def ask_baseline(file):
+def ask_baseline(file, model, experiment):
     """
     Generates a response by baseline model.
     """
     logger.info("Asking baseline.")
-    model = CONFIG['model_1']
     answers = ask(model, file)
 
-    with open(f"answers/1_{model.split('/')[-1]}.json", 'w') as f:
+    with open(f"answers/{experiment}/{model.split('/')[-1]}.json", 'w') as f:
         json.dump(answers, f, indent=4)
 
     return None
 
 
-def ask_baseline_finetuned(file):
+def ask_finetuned(file, model, experiment):
     """
     Generates a response by finetuned baseline model.
     """
-    logger.info("Asking baseline finetuned.")
-    model = CONFIG['model_2']
-    answers = ask(model, file)
+    with open(file, 'r') as f:
+        data = json.load(f)
 
-    with open(f"answers/2_{model.split('/')[-1]}.json", 'w') as f:
-        json.dump(answers, f, indent=4)
+    answers = []
+    for item in data:
+        messages = [
+            {"role": "system", "content": CONFIG['inference_prompt']},
+            {"role": "user", "content": item['question']}
+        ]
+
+        model_id = model
+        logger.info(f"Model used to infer: {model_id}")
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
+
+        pipe = pipeline(
+            "text-generation",
+            model=model_id,
+            device_map="auto",
+        )
+
+        outputs = pipe(
+            messages,
+            max_new_tokens=CONFIG['max_new_tokens'],
+            temperature=CONFIG['temperature'],
+            tokenizer=tokenizer
+        )
+
+        new_dict = {
+            "chapter": item['chapter'],
+            "title": item['title'],
+            "question": item['question'],
+            "answer": outputs[0]["generated_text"][-1]['content']
+        }
+        answers.append(new_dict)
+
+        with open(f"answers/{experiment}/{model.split('/')[-1]}.json", 'w') as f:
+            json.dump(answers, f, indent=4)
 
     return None
 
@@ -80,9 +110,10 @@ class AskRag:
     """
     This is used to operate RAG.
     """
-    def __init__(self, documents_file, questions_file):
+    def __init__(self, documents_file, questions_file, experiment):
         self.documents_file = documents_file
         self.questions_file = questions_file
+        self.experiment = experiment
 
     def _retrieve_documents(self):
         """
@@ -124,7 +155,7 @@ class AskRag:
         """
         login(CONFIG['api_key'])
         client = InferenceClient()
-        model = CONFIG['model_id']
+        model = CONFIG['3_3_70b']
         tokenizer = AutoTokenizer.from_pretrained(model)
 
         with open(self.questions_file, 'r') as file:
@@ -159,7 +190,7 @@ class AskRag:
             }
             answers_list.append(new_dict)
 
-        with open(f"answers/3_rag.json", 'w') as f:
+        with open(f"answers/{self.experiment}/rag.json", 'w') as f:
             json.dump(answers_list, f, indent=4)
 
         # Decode and return the response
