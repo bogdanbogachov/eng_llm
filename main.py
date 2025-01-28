@@ -35,11 +35,33 @@ if __name__ == '__main__':
         # Finetune
         if args.finetune:
             os.makedirs('experiments', exist_ok=True)
+            # Finetune SLG
             for file in os.listdir("question_answer/split_by_title"):
-                finetune_slg_node(
-                    node=os.path.splitext(file)[0],
+                finetune(
+                    model_to_tune='downloaded_3_2_1b',
+                    adapter_name=os.path.splitext(file)[0],
                     data=f"question_answer/split_by_title/{file}",
-                    experiment_number=experiment)
+                    experiment_number=experiment,
+                    slg=True
+                )
+
+            # Finetune llama 3.2 1B instruct
+            finetune(
+                model_to_tune='downloaded_3_2_1b',
+                adapter_name='3_2_1b',
+                data='question_answer/qa_train.json',
+                experiment_number=experiment,
+                slg=False
+            )
+
+            # Finetune llama 3.1 8B instruct
+            finetune(
+                model_to_tune='downloaded_3_1_8b',
+                adapter_name='3_1_8b',
+                data='question_answer/qa_train.json',
+                experiment_number=experiment,
+                slg=False
+            )
 
         # Infer baseline
         if args.infer_baseline:

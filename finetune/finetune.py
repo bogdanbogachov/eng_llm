@@ -1,28 +1,20 @@
-from huggingface_hub import InferenceClient
-from huggingface_hub import login
-
 import torch
 import os
-from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments
-from huggingface_hub import notebook_login
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from datasets import load_dataset
 from peft import LoraConfig
 from trl import SFTTrainer
-from transformers import pipeline
-
-from config import CONFIG
 from logging_config import logger
 
 
-def finetune_slg_node(node, data, experiment_number):
-    logger.info(f"Finetuning {node}.")
-    model_id = "local_llama_model"
+def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
+    logger.info(f"Finetuning {adapter_name}.")
     model = AutoModelForCausalLM.from_pretrained(
-        model_id,
+        model_to_tune,
         torch_dtype=torch.float32,
         device_map="auto"
     )
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_to_tune)
     tokenizer.pad_token = tokenizer.eos_token
 
     dataset = load_dataset("json", data_files=data,  split="train")
@@ -97,8 +89,12 @@ def finetune_slg_node(node, data, experiment_number):
     trainer.train()
 
     # Save the model and tokenizer
-    os.makedirs(f'experiments/{experiment_number}', exist_ok=True)
-    trainer.save_model(f"experiments/{experiment_number}/finetuned_{node}")
+    if slg:
+        os.makedirs(f'experiments/{experiment_number}/slg', exist_ok=True)
+        trainer.save_model(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}")
+    else:
+        os.makedirs(f'experiments/{experiment_number}', exist_ok=True)
+        trainer.save_model(f"experiments/{experiment_number}/finetuned_{adapter_name}")
 
     return None
 
