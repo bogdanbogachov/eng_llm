@@ -97,6 +97,3 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
         trainer.save_model(f"experiments/{experiment_number}/finetuned_{adapter_name}")
 
     return None
-
-def finetune_llama():
-    pass
