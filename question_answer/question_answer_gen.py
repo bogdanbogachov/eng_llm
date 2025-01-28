@@ -22,7 +22,7 @@ def generate(text):
             - a tuple with all generated questions.
     """
     api_key = CONFIG['api_key']
-    model_id = CONFIG['model_id']
+    model_id = CONFIG['3_3_70b']
     system_prompt = CONFIG['system_prompt']
     query_prompt = CONFIG["query_prompt"]
     max_new_tokens = CONFIG['max_new_tokens']
