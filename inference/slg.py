@@ -24,37 +24,23 @@ class SmallLanguageGraph:
             {"role": "user", "content": prompt}
         ]
 
-        login(CONFIG['api_key'])
-        client = InferenceClient()
-        tokenizer = AutoTokenizer.from_pretrained(CONFIG['task_categorizer'])
-        total = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        llm_response = client.text_generation(
-            total,
-            model=CONFIG['3_1_8b'],
-            max_new_tokens=CONFIG['max_new_tokens'],
-            seed=CONFIG['seed'],
-            temperature=CONFIG['temperature']
+        model_id = 'downloaded_3_1_8b'
+        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+
+        pipe = pipeline(
+            "text-generation",
+            model=model_id,
+            device_map="auto",
         )
 
-        return llm_response
+        outputs = pipe(
+            messages,
+            max_new_tokens=CONFIG['max_new_tokens'],
+            temperature=CONFIG['temperature'],
+            tokenizer=tokenizer
+        )
 
-        # model_id = 'downloaded_3_1_8b'
-        # tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-        #
-        # pipe = pipeline(
-        #     "text-generation",
-        #     model=model_id,
-        #     device_map="auto",
-        # )
-        #
-        # outputs = pipe(
-        #     messages,
-        #     max_new_tokens=CONFIG['max_new_tokens'],
-        #     temperature=CONFIG['temperature'],
-        #     tokenizer=tokenizer
-        # )
-        #
-        # return outputs[0]["generated_text"][-1]['content']
+        return outputs[0]["generated_text"][-1]['content']
 
     @staticmethod
     def _tuned_generate(prompt, model):
