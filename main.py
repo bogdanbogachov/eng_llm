@@ -65,21 +65,27 @@ if __name__ == '__main__':
 
         # Infer baseline
         if args.infer_baseline:
-            os.makedirs('answers', exist_ok=True)
-            ask_baseline(file='question_answer/qa_test.json')
-            ask_baseline_finetuned(file='question_answer/qa_test.json')
+            os.makedirs(f'answers/{experiment}', exist_ok=True)
+
+            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_2_1b'], experiment=experiment)
+            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_1_8b'], experiment=experiment)
+
+            ask_finetuned(file='question_answer/qa_test.json', model='finetuned_3_2_1b', experiment=experiment)
+            ask_finetuned(file='question_answer/qa_test.json', model='finetuned_3_1_8b', experiment=experiment)
+
+            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_3_70b'], experiment=experiment)
             rag = AskRag(
                 documents_file='question_answer/qa_train.json',
-                questions_file='question_answer/qa_test.json')
+                questions_file='question_answer/qa_test.json',
+                experiment=experiment)
             rag.generate_responses()
 
         # Infer slg
         if args.infer_slg:
-            os.makedirs('answers', exist_ok=True)
-            slg = SmallLanguageGraph(experts_location=experiment)
+            os.makedirs(f'answers/{experiment}', exist_ok=True)
+            slg = SmallLanguageGraph(experts_location=experiment, experiment=experiment)
             slg.ask_slg(
-                file='question_answer/qa_test.json',
-                inference_model='slg'
+                file='question_answer/qa_test.json'
             )
 
         # Evaluate
