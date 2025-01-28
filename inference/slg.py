@@ -10,8 +10,9 @@ import functools
 
 
 class SmallLanguageGraph:
-    def __init__(self, experts_location):
+    def __init__(self, experts_location, experiment):
         self.experts_location = experts_location
+        self.experiment = experiment
 
     @staticmethod
     def _categorize_task(prompt):
@@ -147,7 +148,7 @@ class SmallLanguageGraph:
         return graph
 
     # Step 4: Execute the Graph
-    def ask_slg(self, file, inference_model):
+    def ask_slg(self, file):
         """Run the graph for a user question."""
         # Step 1: Read the original JSON file
         with open(file, 'r') as f:
@@ -170,7 +171,7 @@ class SmallLanguageGraph:
             answers_list.append(new_dict)
             logger.info(40*'-')
 
-        with open(f'answers/{inference_model}.json', 'w') as f:
+        with open(f'answers/{self.experiment}/slg.json', 'w') as f:
             json.dump(answers_list, f, indent=4)
 
         return None
