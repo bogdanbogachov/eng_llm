@@ -65,14 +65,15 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
         eval_steps=40,
         logging_steps=40,
         save_steps=150,
-        per_device_train_batch_size=2,  # Adjust based on your hardware
+        per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
-        num_train_epochs=2,  # How many times to loop through the dataset
-        fp16=False,  # Must be False for MacBooks
-        report_to="none",  # Here we can use something like tensorboard to see the training metrics
-        log_level="error",
-        learning_rate=1e-5,  # Would avoid larger values here
-        max_grad_norm=2  # Clipping the gradients is always a good idea
+        num_train_epochs=2,
+        fp16=False,
+        report_to="tensorboard",
+        log_level="info",
+        logging_dir="logs",
+        learning_rate=1e-5,
+        max_grad_norm=2
     )
 
     # Initialize Trainer
@@ -92,8 +93,12 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
     if slg:
         os.makedirs(f'experiments/{experiment_number}/slg', exist_ok=True)
         trainer.save_model(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}")
+        with open(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}/training_log.txt", "a") as log_file:
+            log_file.write(str(trainer.state.log_history))
     else:
         os.makedirs(f'experiments/{experiment_number}', exist_ok=True)
         trainer.save_model(f"experiments/{experiment_number}/finetuned_{adapter_name}")
+        with open(f"experiments/{experiment_number}/finetuned_{adapter_name}/training_log.txt", "a") as log_file:
+            log_file.write(str(trainer.state.log_history))
 
     return None
