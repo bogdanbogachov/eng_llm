@@ -9,11 +9,24 @@ from logging_config import logger
 
 def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
     logger.info(f"Finetuning {adapter_name}.")
+
+    if not torch.cuda.is_available():
+        raise RuntimeError("No GPU found! Please ensure you have a CUDA-compatible GPU.")
+
+    device = "cuda"
+
     model = AutoModelForCausalLM.from_pretrained(
         model_to_tune,
-        torch_dtype=torch.float32,
-        device_map="auto"
-    )
+        torch_dtype=torch.float16,
+    ).to(device)
+
+    # Print a device
+    logger.info(f"Model is loaded on: {model.device}")
+
+    # Print GPU memory usage
+    logger.info(f"Memory allocated: {torch.cuda.memory_allocated() / 1024 ** 2:.2f} MB")
+    logger.info(f"Memory reserved: {torch.cuda.memory_reserved() / 1024 ** 2:.2f} MB")
+
     tokenizer = AutoTokenizer.from_pretrained(model_to_tune)
     tokenizer.pad_token = tokenizer.eos_token
 
@@ -39,7 +52,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
 
     # Tokenize the data
     def tokenize_function(example):
-        tokens = tokenizer(example['prompt'], padding="max_length", truncation=True, max_length=512)
+        tokens = tokenizer(example['prompt'], padding="max_length", truncation=True, max_length=1024)
         # Set padding token labels to -100 to ignore them in loss calculation
         tokens['labels'] = [
             -100 if token == tokenizer.pad_token_id else token for token in tokens['input_ids']
@@ -53,9 +66,8 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
     # Define training arguments
     peft_params = LoraConfig(
         lora_alpha=16,
-        # lora_dropout=config['lora_dropout'],
-        r=16,
-        # bias=config['bias'],
+        lora_dropout=0.05,
+        r=32,
         task_type='CAUSAL_LM'
     )
 
@@ -65,15 +77,23 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
         eval_steps=40,
         logging_steps=40,
         save_steps=150,
-        per_device_train_batch_size=2,
-        per_device_eval_batch_size=2,
-        num_train_epochs=2,
-        fp16=False,
+        fp16=True,
         report_to="tensorboard",
         log_level="info",
         logging_dir="logs",
+
+        per_device_train_batch_size=2,
+        per_device_eval_batch_size=2,
+        num_train_epochs=3,
         learning_rate=1e-5,
-        max_grad_norm=2
+        weight_decay=0,
+        adam_beta1=0.9,
+        adam_beta2=0.999,
+        max_grad_norm=2,
+        warmup_ratio=0.1,
+        lr_scheduler_type='linear',
+        gradient_accumulation_steps=1,
+        optim='adamw_torch'
     )
 
     # Initialize Trainer

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # Download models
     if args.download_models:
         download(model_name=CONFIG['3_2_1b'], save_directory='downloaded_3_2_1b')
-        download(model_name=CONFIG['3_1_8b'], save_directory='downloaded_3_1_8b')
+        download_llama_3_1_8b(model_name=CONFIG['3_1_8b'], save_directory='downloaded_3_1_8b')
 
     # Question-answers
     if args.create_qa:
@@ -83,10 +83,12 @@ if __name__ == '__main__':
         if args.infer_finetuned:
             os.makedirs(f'answers/{experiment}', exist_ok=True)
             ask_finetuned(file='question_answer/qa_test.json',
-                          model=f'experiments/{experiment}/finetuned_3_2_1b',
+                          base_model='downloaded_3_2_1b',
+                          adapter=f'experiments/{experiment}/finetuned_3_2_1b',
                           experiment=experiment)
             ask_finetuned(file='question_answer/qa_test.json',
-                          model=f'experiments/{experiment}/finetuned_3_1_8b',
+                          base_model='downloaded_3_1_8b',
+                          adapter=f'experiments/{experiment}/finetuned_3_1_8b',
                           experiment=experiment)
 
         # Infer slg

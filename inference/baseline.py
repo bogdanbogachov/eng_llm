@@ -1,11 +1,13 @@
 from huggingface_hub import InferenceClient
-from transformers import AutoTokenizer, pipeline
+from transformers import AutoTokenizer, pipeline, AutoModelForCausalLM
+from peft import PeftModel
 from huggingface_hub import login
 from logging_config import logger
 from config import CONFIG
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+import torch
 import json
 
 
@@ -62,7 +64,7 @@ def ask_baseline(file, model, experiment):
     return None
 
 
-def ask_finetuned(file, model, experiment):
+def ask_finetuned(file, base_model, adapter, experiment):
     """
     Generates a response by finetuned baseline model.
     """
@@ -70,26 +72,46 @@ def ask_finetuned(file, model, experiment):
         data = json.load(f)
 
     answers = []
-    logger.info(f"Model used to infer: {model}")
+    logger.info(f"Model used to infer: {adapter}")
+
+    # Set the paths for your local model and adapter
+    base_model_path = base_model
+    adapter_path = adapter
+
+    # Load the tokenizer (from base model)
+    tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
+
+    # Load the base model from local storage
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model_path,
+        torch_dtype=torch.float16,  # Uses FP16 for lower memory usage
+        device_map="auto"  # Ensures it loads to GPU automatically
+    )
+
+    # Apply the LoRA adapter on top
+    model = PeftModel.from_pretrained(model, adapter_path)
+
+    # Ensure the model is fully on GPU
+    model.to("cuda")
+
     for item in data:
         messages = [
             {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": item['question']}
         ]
 
-        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
-
+        # Create the pipeline
         pipe = pipeline(
             "text-generation",
             model=model,
-            device_map="auto",
+            tokenizer=tokenizer,
+            device_map="auto"
         )
 
         outputs = pipe(
             messages,
-            max_new_tokens=CONFIG['max_new_tokens'],
-            temperature=CONFIG['temperature'],
-            tokenizer=tokenizer
+            max_new_tokens=CONFIG["max_new_tokens"],
+            temperature=CONFIG["temperature"]
         )
 
         new_dict = {
@@ -100,8 +122,14 @@ def ask_finetuned(file, model, experiment):
         }
         answers.append(new_dict)
 
-        with open(f"answers/{experiment}/{model.split('/')[-1]}.json", 'w') as f:
+        with open(f"answers/{experiment}/{adapter.split('/')[-1]}.json", 'w') as f:
             json.dump(answers, f, indent=4)
+
+    # 🔥 Purge all GPU memory after inference
+    del model
+    del tokenizer
+    torch.cuda.empty_cache()
+    torch.cuda.ipc_collect()  # Helps defragment GPU memory
 
     return None
 
