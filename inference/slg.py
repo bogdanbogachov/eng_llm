@@ -1,10 +1,10 @@
 from langgraph.graph import StateGraph, START, END
-from transformers import AutoTokenizer, pipeline
-from huggingface_hub import InferenceClient
-from huggingface_hub import login
+from transformers import AutoTokenizer, pipeline, AutoModelForCausalLM
 from config import CONFIG
 from logging_config import logger
+from peft import PeftModel
 import json
+import torch
 import os
 import functools
 
@@ -25,48 +25,85 @@ class SmallLanguageGraph:
         ]
 
         model_id = 'downloaded_3_1_8b'
+
+        # Load the tokenizer (from base model)
         tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
 
+        # Load the base model from local storage
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch.float16,  # Uses FP16 for lower memory usage
+            device_map="auto"  # Ensures it loads to GPU automatically
+        )
+
+        # Ensure the model is fully on GPU
+        model.to("cuda")
+
+        # Create the pipeline
         pipe = pipeline(
             "text-generation",
-            model=model_id,
-            device_map="auto",
+            model=model,
+            tokenizer=tokenizer,
+            device_map="auto"
         )
 
         outputs = pipe(
             messages,
-            max_new_tokens=CONFIG['max_new_tokens'],
-            temperature=CONFIG['temperature'],
-            tokenizer=tokenizer
+            max_new_tokens=CONFIG["max_new_tokens"],
+            temperature=CONFIG["temperature"]
         )
 
         return outputs[0]["generated_text"][-1]['content']
 
     @staticmethod
-    def _tuned_generate(prompt, model):
+    def _tuned_generate(prompt, adapter):
         logger.info("Generating from tuned")
         messages = [
             {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": prompt}
         ]
 
-        model_id = model
-        logger.info(f"Model used to infer: {model_id}")
-        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
+        # Set the paths for your local model and adapter
+        base_model_path = 'downloaded_3_2_1b'
+        adapter_path = adapter
+        logger.info(f"Model used to infer: {adapter}")
 
+        # Load the tokenizer (from base model)
+        tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
+
+        # Load the base model from local storage
+        model = AutoModelForCausalLM.from_pretrained(
+            base_model_path,
+            torch_dtype=torch.float16,  # Uses FP16 for lower memory usage
+            device_map="auto"  # Ensures it loads to GPU automatically
+        )
+
+        # Apply the LoRA adapter on top
+        model = PeftModel.from_pretrained(model, adapter_path)
+
+        # Ensure the model is fully on GPU
+        model.to("cuda")
+
+        # Create the pipeline
         pipe = pipeline(
             "text-generation",
-            model=model_id,
-            device_map="auto",
+            model=model,
+            tokenizer=tokenizer,
+            device_map="auto"
         )
 
         outputs = pipe(
             messages,
-            max_new_tokens=CONFIG['max_new_tokens'],
-            temperature=CONFIG['temperature'],
-            tokenizer=tokenizer
+            max_new_tokens=CONFIG["max_new_tokens"],
+            temperature=CONFIG["temperature"]
         )
+
         logger.info("Inference complete.")
+
+        del model
+        del tokenizer
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()  # Helps defragment GPU memory
 
         return outputs[0]["generated_text"][-1]['content']
 

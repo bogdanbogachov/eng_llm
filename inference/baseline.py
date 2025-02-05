@@ -5,7 +5,7 @@ from huggingface_hub import login
 from logging_config import logger
 from config import CONFIG
 from sentence_transformers import SentenceTransformer
-import faiss
+
 import numpy as np
 import torch
 import json
