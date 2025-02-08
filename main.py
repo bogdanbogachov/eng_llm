@@ -32,7 +32,7 @@ if __name__ == '__main__':
         populate(file_to_read='question_answer/srm.pdf')
 
     if args.split_qa:
-        split_train_test('question_answer/qa_pairs_test.json')
+        split_train_test('question_answer/qa_pairs.json')
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
