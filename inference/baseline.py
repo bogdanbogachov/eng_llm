@@ -147,6 +147,8 @@ class AskRag:
         """
         Retrieves documents from passed in question-answer pairs file.
         """
+        import faiss
+
         logger.info("Asking RAG.")
         with open(self.documents_file, 'r') as file:
             data = json.load(file)

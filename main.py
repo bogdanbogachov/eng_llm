@@ -1,9 +1,5 @@
 from config import CONFIG
-from question_answer import populate, split_qa_pairs_by_title, split_train_test
-from evaluate import load_data, evaluate
-from inference import SmallLanguageGraph, ask_baseline, ask_finetuned, AskRag
-from download_llama import download
-from finetune import finetune
+
 import argparse
 import json
 import os
@@ -24,14 +20,17 @@ if __name__ == '__main__':
 
     # Download models
     if args.download_models:
+        from download_llama import download, download_llama_3_1_8b
         download(model_name=CONFIG['3_2_1b'], save_directory='downloaded_3_2_1b')
         download_llama_3_1_8b(model_name=CONFIG['3_1_8b'], save_directory='downloaded_3_1_8b')
 
     # Question-answers
     if args.create_qa:
+        from question_answer import populate
         populate(file_to_read='question_answer/srm.pdf')
 
     if args.split_qa:
+        from question_answer import split_qa_pairs_by_title, split_train_test
         split_train_test('question_answer/qa_pairs.json')
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
@@ -39,6 +38,7 @@ if __name__ == '__main__':
     for experiment in [1]:
         # Finetune
         if args.finetune:
+            from finetune import finetune
             os.makedirs('experiments', exist_ok=True)
             # Finetune SLG
             for file in os.listdir("question_answer/split_by_title"):
@@ -70,6 +70,7 @@ if __name__ == '__main__':
 
         # Infer baseline
         if args.infer_baseline:
+            from inference import ask_baseline, AskRag
             os.makedirs(f'answers/{experiment}', exist_ok=True)
             ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_2_1b'], experiment=experiment)
             ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_1_8b'], experiment=experiment)
@@ -81,6 +82,7 @@ if __name__ == '__main__':
             rag.generate_responses()
 
         if args.infer_finetuned:
+            from inference import ask_finetuned
             os.makedirs(f'answers/{experiment}', exist_ok=True)
             ask_finetuned(file='question_answer/qa_test.json',
                           base_model='downloaded_3_2_1b',
@@ -93,6 +95,7 @@ if __name__ == '__main__':
 
         # Infer slg
         if args.infer_slg:
+            from inference import SmallLanguageGraph
             os.makedirs(f'answers/{experiment}', exist_ok=True)
             slg = SmallLanguageGraph(experts_location=experiment, experiment=experiment)
             slg.ask_slg(
@@ -101,6 +104,7 @@ if __name__ == '__main__':
 
         # Evaluate
         if args.evaluate:
+            from evaluate import load_data, evaluate
             metrics_list = []
             ground_truth_file = "question_answer/qa_test.json"
             for predictions_file in os.listdir(f"answers/{experiment}"):

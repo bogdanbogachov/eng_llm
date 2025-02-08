@@ -3,7 +3,6 @@ from transformers import AutoTokenizer
 from huggingface_hub import login
 from sklearn.model_selection import train_test_split
 
-from .pdf_reader import read_doc
 from logging_config import logger
 from config import CONFIG
 
@@ -60,6 +59,7 @@ def generate(text):
 
 
 def populate(file_to_read):
+    from .pdf_reader import read_doc
     df = read_doc(file_to_read)
     index_to_start_qa_gen = 0
 
