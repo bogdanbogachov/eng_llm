@@ -6,6 +6,7 @@ from config import CONFIG
 from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
+import time
 
 logger.propagate = False
 
@@ -92,7 +93,13 @@ def evaluate(predictions, ground_truth):
     rouge_scores = {'rouge1': [], 'rouge2': [], 'rougeL': []}
     exact_matches = []
     ai_experts = []
+    logger.info(f"Evaluation has started.")
+    counter = 0
     for pred, truth in zip(predictions, ground_truth):
+        counter += 1
+        if counter == 160:
+            time.sleep(30)
+        logger.info(f"Evaluating the answer #: {counter}.")
         if pred['question'] != truth['question']:
             logger.info(f"Warning: questions didn't match at chapter: {pred['chapter']}, and title: {pred['title']}")
             logger.info(f"Pred question: {pred['question']}")
@@ -100,26 +107,37 @@ def evaluate(predictions, ground_truth):
             logger.info(40*'-')
             continue
 
-        gt_answer = truth['answer']
-        pred_answer = pred['answer']
+        if truth['answer'] == '':
+            gt_answer = 'Empty'
+        elif truth['answer'] is None:
+            gt_answer = 'Empty'
+        else:
+            gt_answer = truth['answer']
+
+        if pred['answer'] == '':
+            pred_answer = 'Empty'
+        elif pred['answer'] is None:
+            pred_answer = 'Empty'
+        else:
+            pred_answer = pred['answer']
 
         # BLEU
-        logger.info("Calculating BLEU score.")
+        logger.debug("Calculating BLEU score.")
         bleu = calculate_bleu(gt_answer, pred_answer)
         bleu_scores.append(bleu)
 
         # ROUGE
-        logger.info("Calculating ROUGE score.")
+        logger.debug("Calculating ROUGE score.")
         rouge = calculate_rouge(gt_answer, pred_answer)
         for key in rouge_scores.keys():
             rouge_scores[key].append(rouge[key].fmeasure)
 
         # Exact Match
-        logger.info("Calculating Exact Match (EM) score.")
+        logger.debug("Calculating Exact Match (EM) score.")
         exact_matches.append(calculate_exact_match(gt_answer, pred_answer))
 
         # AI expert
-        logger.info("Calculating AI expert score.")
+        logger.debug("Calculating AI expert score.")
         ai_expert = calculate_ai_expert(gt_answer, pred_answer)
         ai_experts.append(ai_expert)
 
@@ -130,6 +148,7 @@ def evaluate(predictions, ground_truth):
     ai_expert_score = sum(ai_experts) / len(ai_experts) if ai_experts else 0
     logger.info(f"Evaluation has been completed.")
     logger.info(40*'-')
+    time.sleep(30)
 
     return {
         "BLEU": avg_bleu,
