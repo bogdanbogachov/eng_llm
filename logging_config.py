@@ -8,7 +8,7 @@ def setup_logger(name="text_tuning"):
 
     # Create a console handler and set the level to debug
     ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    ch.setLevel(logging.DEBUG)
 
     # Create a file handler and set the level to debug
     fh = logging.FileHandler('log_file.log')

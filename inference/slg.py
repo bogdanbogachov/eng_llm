@@ -7,6 +7,7 @@ import json
 import torch
 import os
 import functools
+import difflib
 
 
 class SmallLanguageGraph:
@@ -14,27 +15,31 @@ class SmallLanguageGraph:
         self.experts_location = experts_location
         self.experiment = experiment
 
-    @staticmethod
-    def _categorize_task(prompt):
+    def _categorize_task(self, prompt, experts):
         """
-        Function to generate responses using the LLaMA model
+        Function to orchestrate questions.
         """
         messages = [
             {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": prompt}
         ]
 
-        model_id = 'downloaded_3_1_8b'
+        # Set the paths for your local model and adapter
+        base_model_path = 'downloaded_3_1_8b'
+        adapter_path = f"experiments/{self.experts_location}/finetuned_orchestrator_3_1_8b"
 
         # Load the tokenizer (from base model)
-        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
 
         # Load the base model from local storage
         model = AutoModelForCausalLM.from_pretrained(
-            model_id,
+            base_model_path,
             torch_dtype=torch.float16,  # Uses FP16 for lower memory usage
             device_map="auto"  # Ensures it loads to GPU automatically
         )
+
+        # Apply the LoRA adapter on top
+        model = PeftModel.from_pretrained(model, adapter_path)
 
         # Ensure the model is fully on GPU
         model.to("cuda")
@@ -53,7 +58,19 @@ class SmallLanguageGraph:
             temperature=CONFIG["temperature"]
         )
 
-        return outputs[0]["generated_text"][-1]['content']
+        output = outputs[0]["generated_text"][-1]['content']
+
+        logger.debug(40*'-')
+        logger.debug(40*'-')
+        logger.debug(f"Categorizer output: {outputs}")
+        logger.debug(40*'-')
+        logger.debug(40*'-')
+
+        if output in experts:
+            return output
+        else:
+            closest_match = max(experts, key=lambda s: difflib.SequenceMatcher(None, output, s).ratio())
+            return closest_match
 
     @staticmethod
     def _tuned_generate(prompt, adapter):
@@ -97,6 +114,7 @@ class SmallLanguageGraph:
             max_new_tokens=CONFIG["max_new_tokens"],
             temperature=CONFIG["temperature"]
         )
+        logger.debug(f"Output: {outputs}")
 
         logger.info("Inference complete.")
 
@@ -114,12 +132,11 @@ class SmallLanguageGraph:
         experts_list = "\n".join(
             f"- {expert}" for expert in os.listdir(f'experiments/{self.experts_location}/slg'))
         prompt = (
-            f"Analyze the question below and find an expert from the following list which can answer the question:\n"
-            f"{experts_list}\n"
-            f"Question: {question}\n"
-            f"Return the category only."
+            f"Analyze this question and find an appropriate expert who can answer it:\n {question}"
+            f"A friendly reminder, experts are as follows:\n {experts_list}"
+            f"Very important, return only an expert name, nothing else!"
         )
-        response = self._categorize_task(prompt)
+        response = self._categorize_task(prompt, experts_list)
         state["category"] = response.strip().lower()
         return state
 

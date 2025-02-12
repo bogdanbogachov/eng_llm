@@ -7,7 +7,7 @@ from trl import SFTTrainer
 from logging_config import logger
 
 
-def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
+def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, orchestrator=False):
     logger.info(f"Finetuning {adapter_name}.")
 
     if not torch.cuda.is_available():
@@ -36,14 +36,28 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=True):
 
     # Define a function to apply the chat template
     def apply_chat_template(example):
-        messages = [
-            {"role": "user", "content": example['question']},
-            {"role": "assistant", "content": example['answer']}
-        ]
-        prompt = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-        return {"prompt": prompt}
+        if orchestrator:
+            messages = [
+                {
+                    "role": "user",
+                    "content":
+                        f"Analyze this question and find an appropriate expert who can answer it: {example['question']}"
+                },
+                {"role": "assistant", "content": f"{example['title'].replace(' ', '_').replace('/', '_').lower()}" }
+            ]
+            prompt = tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
+            return {"prompt": prompt}
+        else:
+            messages = [
+                {"role": "user", "content": example['question']},
+                {"role": "assistant", "content": example['answer']}
+            ]
+            prompt = tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
+            return {"prompt": prompt}
 
     # Apply the chat template function to the dataset
     new_dataset = dataset.map(apply_chat_template)

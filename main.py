@@ -35,7 +35,7 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    for experiment in [1]:
+    for experiment in [2]:
         # Finetune
         if args.finetune:
             from finetune import finetune
@@ -50,13 +50,21 @@ if __name__ == '__main__':
                     slg=True
                 )
 
+            # Finetune an orchestrator for SLG
+            finetune(
+                model_to_tune='downloaded_3_1_8b',
+                adapter_name='orchestrator_3_1_8b',
+                data='question_answer/qa_train.json',
+                experiment_number=experiment,
+                orchestrator=True
+            )
+
             # Finetune llama 3.2 1B instruct
             finetune(
                 model_to_tune='downloaded_3_2_1b',
                 adapter_name='3_2_1b',
                 data='question_answer/qa_train.json',
-                experiment_number=experiment,
-                slg=False
+                experiment_number=experiment
             )
 
             # Finetune llama 3.1 8B instruct
@@ -64,8 +72,7 @@ if __name__ == '__main__':
                 model_to_tune='downloaded_3_1_8b',
                 adapter_name='3_1_8b',
                 data='question_answer/qa_train.json',
-                experiment_number=experiment,
-                slg=False
+                experiment_number=experiment
             )
 
         # Infer baseline
