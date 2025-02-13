@@ -99,7 +99,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
         num_train_epochs=3,
-        learning_rate=1e-5,
+        learning_rate=1e-4,
         weight_decay=0,
         adam_beta1=0.9,
         adam_beta2=0.999,
@@ -122,6 +122,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     # Train the model
     trainer.train()
+    trainer.evaluate()
 
     # Save the model and tokenizer
     if slg:

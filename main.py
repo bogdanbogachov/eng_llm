@@ -35,7 +35,7 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    for experiment in [2]:
+    for experiment in [3]:
         # Finetune
         if args.finetune:
             from finetune import finetune
