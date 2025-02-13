@@ -85,6 +85,11 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         task_type='CAUSAL_LM'
     )
 
+    if orchestrator:
+        learning_rate = 2e-5
+    else:
+        learning_rate = 1e-4
+
     training_args = TrainingArguments(
         output_dir=f"checkpoints",
         eval_strategy="steps",  # To evaluate during training
@@ -99,7 +104,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
         num_train_epochs=3,
-        learning_rate=1e-4,
+        learning_rate=learning_rate,
         weight_decay=0,
         adam_beta1=0.9,
         adam_beta2=0.999,

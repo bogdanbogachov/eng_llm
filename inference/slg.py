@@ -59,17 +59,14 @@ class SmallLanguageGraph:
         )
 
         output = outputs[0]["generated_text"][-1]['content']
-
-        logger.debug(40*'-')
-        logger.debug(40*'-')
-        logger.debug(f"Categorizer output: {outputs}")
-        logger.debug(40*'-')
-        logger.debug(40*'-')
+        logger.info(f'Categorizer raw output: {output}')
 
         if output in experts:
+            logger.info(f'Categorizer output found in experts list: {output}')
             return output
         else:
             closest_match = max(experts, key=lambda s: difflib.SequenceMatcher(None, output, s).ratio())
+            logger.info(f'Categorizer closest match with experts: {closest_match}')
             return closest_match
 
     @staticmethod
