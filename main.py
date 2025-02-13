@@ -35,7 +35,7 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    for experiment in [2]:
+    for experiment in [3]:
         # Finetune
         if args.finetune:
             from finetune import finetune
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
         # Evaluate
         if args.evaluate:
-            from evaluate import load_data, evaluate
+            from evaluate import load_data, evaluate, pull_training_metrics
             metrics_list = []
             ground_truth_file = "question_answer/qa_test.json"
             for predictions_file in os.listdir(f"answers/{experiment}"):
@@ -122,3 +122,14 @@ if __name__ == '__main__':
                 metrics_list.append(new_dict)
                 with open(f'experiments/{experiment}/metrics.json', 'w') as f:
                     json.dump(metrics_list, f, indent=4)
+
+            # Add train and eval loss to
+            training_metrics = pull_training_metrics(f'experiments/{experiment}')
+
+            with open(f'experiments/{experiment}/metrics.json', "r") as f:
+                data = json.load(f)  # Load JSON as a Python list
+
+            data.extend(training_metrics)
+
+            with open(f'experiments/{experiment}/metrics.json', "w") as f:
+                json.dump(data, f, indent=4)

@@ -7,6 +7,8 @@ from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
 import time
+import os
+import ast
 
 logger.propagate = False
 
@@ -97,8 +99,8 @@ def evaluate(predictions, ground_truth):
     counter = 0
     for pred, truth in zip(predictions, ground_truth):
         counter += 1
-        if counter == 160:
-            time.sleep(30)
+        if counter in [i for i in range(0, len(ground_truth), 1)]:
+            time.sleep(1)
         logger.info(f"Evaluating the answer #: {counter}.")
         if pred['question'] != truth['question']:
             logger.info(f"Warning: questions didn't match at chapter: {pred['chapter']}, and title: {pred['title']}")
@@ -156,3 +158,62 @@ def evaluate(predictions, ground_truth):
         "Exact Match": exact_match_score,
         "AI Expert": ai_expert_score
     }
+
+
+def extract_log_values(log_file):
+    with open(log_file, 'r') as f:
+        content = f.read()
+        data = ast.literal_eval(content)
+
+        second_last_log = data[-2]  # Get the second-to-last dictionary
+        last_log = data[-1]  # Get the last dictionary
+
+        return {
+            'train_loss': second_last_log['train_loss'],
+            'train_runtime': second_last_log['train_runtime'],
+            'eval_loss': last_log['eval_loss']
+        }
+
+
+def pull_training_metrics(base_folder):
+    metrics = []
+    for folder in os.listdir(base_folder):
+        folder_path = os.path.join(base_folder, folder)
+        if folder == 'slg':
+            all_train_loss = 0
+            all_eval_loss = 0
+            total_train_runtime = 0
+            count = 0
+
+            for subfolder in os.listdir(folder_path):
+                subfolder_path = os.path.join(folder_path, subfolder)
+                if os.path.isdir(subfolder_path):
+                    training_log_path = os.path.join(subfolder_path, 'training_log.txt')
+                    if os.path.exists(training_log_path):
+                        log_values = extract_log_values(training_log_path)
+                        all_train_loss += log_values['train_loss']
+                        all_eval_loss += log_values['eval_loss']
+                        total_train_runtime += log_values['train_runtime']
+                        count += 1
+
+
+            metrics.append(
+                {
+                'train_loss_slg': all_train_loss / count,
+                'eval_loss_slg': all_eval_loss / count,
+                'train_runtime_slg': total_train_runtime
+                }
+            )
+        elif folder != 'slg' and folder != 'logs':
+            training_log_path = os.path.join(folder_path, 'training_log.txt')
+            if os.path.exists(training_log_path):
+                log_values = extract_log_values(training_log_path)
+                metrics.append(
+                    {
+                        f'train_loss_{folder}': log_values['train_loss'],
+                        f'all_eval_loss_{folder}': log_values['eval_loss'],
+                        f'train_runtime_{folder}': log_values['train_runtime']
+                    }
+                )
+
+    return metrics
