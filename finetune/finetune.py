@@ -87,8 +87,10 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     if orchestrator:
         learning_rate = 2e-5
+        label_smoothing_factor = 0.15
     else:
-        learning_rate = 1e-4
+        learning_rate = 1e-3
+        label_smoothing_factor = 0.01
 
     training_args = TrainingArguments(
         output_dir=f"checkpoints",
@@ -112,7 +114,8 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         warmup_ratio=0.1,
         lr_scheduler_type='linear',
         gradient_accumulation_steps=1,
-        optim='adamw_torch'
+        optim='adamw_torch',
+        label_smoothing_factor=label_smoothing_factor
     )
 
     # Initialize Trainer

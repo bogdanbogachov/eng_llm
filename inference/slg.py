@@ -54,7 +54,7 @@ class SmallLanguageGraph:
 
         outputs = pipe(
             messages,
-            max_new_tokens=CONFIG["max_new_tokens"],
+            max_new_tokens=30,
             temperature=CONFIG["temperature"]
         )
 
