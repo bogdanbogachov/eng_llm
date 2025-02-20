@@ -9,6 +9,7 @@ from huggingface_hub import login
 import time
 import os
 import ast
+import re
 
 logger.propagate = False
 
@@ -163,7 +164,9 @@ def evaluate(predictions, ground_truth):
 def extract_log_values(log_file):
     with open(log_file, 'r') as f:
         content = f.read()
-        data = ast.literal_eval(content)
+        content = re.sub(r'\bnan\b', "100000", content)
+        content = re.sub(r'\binf\b', "100000", content)
+        data = json.loads(content.replace("'", '"'))
 
         second_last_log = data[-2]  # Get the second-to-last dictionary
         last_log = data[-1]  # Get the last dictionary
@@ -190,6 +193,7 @@ def pull_training_metrics(base_folder):
                 if os.path.isdir(subfolder_path):
                     training_log_path = os.path.join(subfolder_path, 'training_log.txt')
                     if os.path.exists(training_log_path):
+                        logger.debug(training_log_path)
                         log_values = extract_log_values(training_log_path)
                         all_train_loss += log_values['train_loss']
                         all_eval_loss += log_values['eval_loss']
@@ -206,6 +210,7 @@ def pull_training_metrics(base_folder):
             )
         elif folder != 'slg' and folder != 'logs':
             training_log_path = os.path.join(folder_path, 'training_log.txt')
+            logger.debug(training_log_path)
             if os.path.exists(training_log_path):
                 log_values = extract_log_values(training_log_path)
                 metrics.append(
