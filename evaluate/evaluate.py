@@ -8,7 +8,6 @@ from transformers import AutoTokenizer
 from huggingface_hub import login
 import time
 import os
-import ast
 import re
 
 logger.propagate = False
@@ -98,11 +97,15 @@ def evaluate(predictions, ground_truth):
     ai_experts = []
     logger.info(f"Evaluation has started.")
     counter = 0
+    threshold = 10
     for pred, truth in zip(predictions, ground_truth):
-        counter += 1
         if counter in [i for i in range(0, len(ground_truth), 1)]:
             time.sleep(1)
-        logger.info(f"Evaluating the answer #: {counter}.")
+        counter += 1
+        percent_checked = (counter/len(predictions))*100
+        if threshold < percent_checked:
+            logger.info(f"Evaluated {threshold}%")
+            threshold += 10
         if pred['question'] != truth['question']:
             logger.info(f"Warning: questions didn't match at chapter: {pred['chapter']}, and title: {pred['title']}")
             logger.info(f"Pred question: {pred['question']}")

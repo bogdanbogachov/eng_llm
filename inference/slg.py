@@ -20,7 +20,6 @@ class SmallLanguageGraph:
         Function to orchestrate questions.
         """
         messages = [
-            {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": prompt}
         ]
 
@@ -39,26 +38,17 @@ class SmallLanguageGraph:
         )
 
         # Apply the LoRA adapter on top
-        model = PeftModel.from_pretrained(model, adapter_path)
+        finetuned_model = PeftModel.from_pretrained(model, adapter_path)
 
         # Ensure the model is fully on GPU
-        model.to("cuda")
+        finetuned_model.to("cuda")
 
-        # Create the pipeline
-        pipe = pipeline(
-            "text-generation",
-            model=model,
-            tokenizer=tokenizer,
-            device_map="auto"
-        )
-
-        outputs = pipe(
-            messages,
-            max_new_tokens=30,
-            temperature=CONFIG["temperature"]
-        )
-
-        output = outputs[0]["generated_text"][-1]['content']
+        # Inference
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
+        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1)
+        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        output = text.split("assistant")[1]
         logger.info(f'Categorizer raw output: {output}')
 
         if output in experts:
@@ -73,7 +63,7 @@ class SmallLanguageGraph:
     def _tuned_generate(prompt, adapter):
         logger.info("Generating from tuned")
         messages = [
-            {"role": "system", "content": CONFIG['inference_prompt']},
+            # {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": prompt}
         ]
 
@@ -93,26 +83,18 @@ class SmallLanguageGraph:
         )
 
         # Apply the LoRA adapter on top
-        model = PeftModel.from_pretrained(model, adapter_path)
+        finetuned_model = PeftModel.from_pretrained(model, adapter_path)
 
         # Ensure the model is fully on GPU
-        model.to("cuda")
+        finetuned_model.to("cuda")
 
-        # Create the pipeline
-        pipe = pipeline(
-            "text-generation",
-            model=model,
-            tokenizer=tokenizer,
-            device_map="auto"
-        )
+        # Inference
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
+        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1)
+        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-        outputs = pipe(
-            messages,
-            max_new_tokens=CONFIG["max_new_tokens"],
-            temperature=CONFIG["temperature"]
-        )
-        logger.debug(f"Output: {outputs}")
-
+        logger.debug(f"Output: {text}")
         logger.info("Inference complete.")
 
         del model
@@ -120,7 +102,7 @@ class SmallLanguageGraph:
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()  # Helps defragment GPU memory
 
-        return outputs[0]["generated_text"][-1]['content']
+        return text.split("assistant")[1]
 
     # Step 2: Define Node Functions
     def _task_analysis_node(self, state):

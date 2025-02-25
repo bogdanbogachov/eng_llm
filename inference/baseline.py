@@ -89,36 +89,28 @@ def ask_finetuned(file, base_model, adapter, experiment):
     )
 
     # Apply the LoRA adapter on top
-    model = PeftModel.from_pretrained(model, adapter_path)
+    finetuned_model = PeftModel.from_pretrained(model, adapter_path)
 
     # Ensure the model is fully on GPU
-    model.to("cuda")
+    finetuned_model.to("cuda")
 
     for item in data:
         messages = [
-            {"role": "system", "content": CONFIG['inference_prompt']},
             {"role": "user", "content": item['question']}
         ]
 
         # Create the pipeline
-        pipe = pipeline(
-            "text-generation",
-            model=model,
-            tokenizer=tokenizer,
-            device_map="auto"
-        )
-
-        outputs = pipe(
-            messages,
-            max_new_tokens=CONFIG["max_new_tokens"],
-            temperature=CONFIG["temperature"]
-        )
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
+        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1)
+        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        output = text.split("assistant")[1]
 
         new_dict = {
             "chapter": item['chapter'],
             "title": item['title'],
             "question": item['question'],
-            "answer": outputs[0]["generated_text"][-1]['content']
+            "answer": output
         }
         answers.append(new_dict)
 
@@ -167,7 +159,7 @@ class AskRag:
         return documents, index
 
     @staticmethod
-    def _retrieve_answers(query, documents, index, k=2):
+    def _retrieve_answers(query, documents, index, k=15):
         """
         Retrieval model.
         """

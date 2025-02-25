@@ -8,6 +8,7 @@ from config import CONFIG
 
 from collections import defaultdict
 import json
+import time
 import math
 import os
 
@@ -35,7 +36,8 @@ def generate(text):
     questions = tuple()
     # An average word has 4 letter, an average sentence has 20 words, thus I divide text by 80 to get the number
     # of sentences. The hypothesis behind is that each sentence should have a question.
-    number_of_questions = max(1, math.ceil(int(len(text)/(4*20))))
+    # number_of_questions = max(1, math.ceil(int(len(text)/(4*20))))
+    number_of_questions = 28 # 28 was empirically proven to be a sufficient amount of questions
     logger.info(f"Number of questions: {number_of_questions}")
     for i in range(0, number_of_questions):
         logger.info(f"Working on question # {i}")
@@ -54,6 +56,8 @@ def generate(text):
             temperature=temperature
         )
         questions += (llm_response, )
+
+        time.sleep(1) # Sleep for 1 second to avoid HF API crash
 
     return questions
 
@@ -144,6 +148,9 @@ def split_train_test(data_file):
     logger.info(f"Splitting {data_file} into train and test sets.")
     with open(data_file, "r", encoding="utf-8") as f:
         data = json.load(f)
+
+    # Delete all instances where title == answer
+    data = [entry for entry in data if entry.get("title") != entry.get("answer")]
 
     # Split data into train and test sets (80% train, 20% test)
     train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)

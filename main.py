@@ -120,16 +120,18 @@ if __name__ == '__main__':
                 results = evaluate(predictions, ground_truth)
                 new_dict = {os.path.splitext(predictions_file)[0]: results}
                 metrics_list.append(new_dict)
+                os.makedirs(f"experiments/{experiment}", exist_ok=True)
                 with open(f'experiments/{experiment}/metrics.json', 'w') as f:
                     json.dump(metrics_list, f, indent=4)
 
             # Add train and eval loss to
-            training_metrics = pull_training_metrics(f'experiments/{experiment}')
+            if experiment < 101: # make sure to extract training metrics only for tuned models
+                training_metrics = pull_training_metrics(f'experiments/{experiment}')
 
-            with open(f'experiments/{experiment}/metrics.json', "r") as f:
-                data = json.load(f)  # Load JSON as a Python list
+                with open(f'experiments/{experiment}/metrics.json', "r") as f:
+                    data = json.load(f)  # Load JSON as a Python list
 
-            data.extend(training_metrics)
+                data.extend(training_metrics)
 
-            with open(f'experiments/{experiment}/metrics.json', "w") as f:
-                json.dump(data, f, indent=4)
+                with open(f'experiments/{experiment}/metrics.json', "w") as f:
+                    json.dump(data, f, indent=4)
