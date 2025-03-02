@@ -3,6 +3,7 @@ from config import CONFIG
 import argparse
 import json
 import os
+import shutil
 
 
 if __name__ == '__main__':
@@ -35,10 +36,11 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    for experiment in [4]:
+    for experiment in ['test']:
         # Finetune
         if args.finetune:
             from finetune import finetune
+            shutil.rmtree('checkpoints')
             os.makedirs('experiments', exist_ok=True)
             # Finetune SLG
             for file in os.listdir("question_answer/split_by_title"):

@@ -45,10 +45,12 @@ class SmallLanguageGraph:
 
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
-        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1)
+        inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
+        outputs = finetuned_model.generate(**inputs, max_new_tokens=10, num_return_sequences=1, temperature=0.1)
         text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        output = text.split("assistant")[1]
+        output = text.split("assistant")[1].strip()
+        output = output.replace(' ', '_').replace('/', '_').lower()
+        output = 'finetuned_' + output
         logger.info(f'Categorizer raw output: {output}')
 
         if output in experts:
@@ -90,8 +92,8 @@ class SmallLanguageGraph:
 
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
-        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1)
+        inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
+        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1, temperature=0.1)
         text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         logger.debug(f"Output: {text}")
@@ -108,22 +110,22 @@ class SmallLanguageGraph:
     def _task_analysis_node(self, state):
         """Analyze the task and route to appropriate expert."""
         question = state["question"]
-        experts_list = "\n".join(
-            f"- {expert}" for expert in os.listdir(f'experiments/{self.experts_location}/slg'))
-        prompt = (
-            f"Analyze this question and find an appropriate expert who can answer it:\n {question}"
-            f"A friendly reminder, experts are as follows:\n {experts_list}"
-            f"Very important, return only an expert name, nothing else!"
+        # experts_list = "\n".join(
+        #     f"- {expert}" for expert in os.listdir(f'experiments/{self.experts_location}/slg'))
+        prompt = (f"Analyze this question and find an appropriate expert who can answer it: {question}"
+            # f"Analyze this question and find an appropriate expert who can answer it:\n {question}"
+            # f"A friendly reminder, experts are as follows:\n {experts_list}"
+            # f"Very important! Return only an expert name, nothing else!"
         )
-        response = self._categorize_task(prompt, experts_list)
+        experts_list_of_strings = [expert for expert in os.listdir(f'experiments/{self.experts_location}/slg')]
+        response = self._categorize_task(prompt, experts_list_of_strings)
         state["category"] = response.strip().lower()
         return state
 
     def _expert_node_builder(self, state, model):
         """Damage classification expert node."""
         question = state["question"]
-        prompt = f"""You are an expert in aerospace engineering.
-        Provide a detailed answer to the following question: {question}"""
+        prompt = question
         state["answer"] = self._tuned_generate(
             prompt,
             f"experiments/{self.experts_location}/slg/{model}"

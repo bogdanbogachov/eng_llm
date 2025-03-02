@@ -4,6 +4,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from datasets import load_dataset
 from peft import LoraConfig
 from trl import SFTTrainer
+from transformers import EarlyStoppingCallback
+
 from logging_config import logger
 
 
@@ -43,7 +45,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
                     "content":
                         f"Analyze this question and find an appropriate expert who can answer it: {example['question']}"
                 },
-                {"role": "assistant", "content": f"{example['title'].replace(' ', '_').replace('/', '_').lower()}" }
+                {"role": "assistant", "content": f"{example['title']}" }
             ]
             prompt = tokenizer.apply_chat_template(
                 messages, tokenize=False, add_generation_prompt=True
@@ -79,21 +81,23 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     # Define training arguments
     peft_params = LoraConfig(
-        lora_alpha=16,
+        lora_alpha=32,
         lora_dropout=0.05,
-        r=32,
+        r=64,
         task_type='CAUSAL_LM'
     )
 
     if orchestrator:
-        learning_rate = 2e-5
-        label_smoothing_factor = 0.15
+        learning_rate = 1e-4
+        label_smoothing_factor = 0.01
     else:
-        learning_rate = 1e-3
+        learning_rate = 1e-4
         label_smoothing_factor = 0.01
 
+    os.makedirs(f'checkpoints/{experiment_number}/{adapter_name}', exist_ok=True)
+
     training_args = TrainingArguments(
-        output_dir=f"checkpoints",
+        output_dir=f"checkpoints/{experiment_number}/{adapter_name}",
         eval_strategy="steps",  # To evaluate during training
         eval_steps=10,
         logging_steps=10,
@@ -105,7 +109,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
-        num_train_epochs=3,
+        num_train_epochs=15,
         learning_rate=learning_rate,
         weight_decay=0,
         adam_beta1=0.9,
@@ -115,7 +119,10 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         lr_scheduler_type='linear',
         gradient_accumulation_steps=1,
         optim='adamw_torch',
-        label_smoothing_factor=label_smoothing_factor
+        label_smoothing_factor=label_smoothing_factor,
+
+        load_best_model_at_end=True,
+        save_total_limit=4
     )
 
     # Initialize Trainer
@@ -125,7 +132,8 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         peft_config=peft_params,
         train_dataset=tokenized_dataset["train"],
         eval_dataset=tokenized_dataset["test"],
-        tokenizer=tokenizer
+        tokenizer=tokenizer,
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)] # Number of steps without improvement
         )
 
     # Train the model
