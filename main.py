@@ -36,104 +36,105 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    for experiment in ['test']:
-        # Finetune
-        if args.finetune:
-            from finetune import finetune
-            shutil.rmtree('checkpoints')
-            os.makedirs('experiments', exist_ok=True)
-            # Finetune SLG
-            for file in os.listdir("question_answer/split_by_title"):
-                finetune(
-                    model_to_tune='downloaded_3_2_1b',
-                    adapter_name=os.path.splitext(file)[0],
-                    data=f"question_answer/split_by_title/{file}",
-                    experiment_number=experiment,
-                    slg=True
-                )
-
-            # Finetune an orchestrator for SLG
-            finetune(
-                model_to_tune='downloaded_3_1_8b',
-                adapter_name='orchestrator_3_1_8b',
-                data='question_answer/qa_train.json',
-                experiment_number=experiment,
-                orchestrator=True
-            )
-
-            # Finetune llama 3.2 1B instruct
+    experiment = 'test_2'
+    # Finetune
+    if args.finetune:
+        from finetune import finetune
+        shutil.rmtree('checkpoints')
+        os.makedirs('experiments', exist_ok=True)
+        # Finetune SLG
+        for file in os.listdir("question_answer/split_by_title"):
             finetune(
                 model_to_tune='downloaded_3_2_1b',
-                adapter_name='3_2_1b',
-                data='question_answer/qa_train.json',
-                experiment_number=experiment
+                adapter_name=os.path.splitext(file)[0],
+                data=f"question_answer/split_by_title/{file}",
+                experiment_number=experiment,
+                slg=True
             )
 
-            # Finetune llama 3.1 8B instruct
-            finetune(
-                model_to_tune='downloaded_3_1_8b',
-                adapter_name='3_1_8b',
-                data='question_answer/qa_train.json',
-                experiment_number=experiment
-            )
+        # Finetune an orchestrator for SLG
+        finetune(
+            model_to_tune='downloaded_3_1_8b',
+            adapter_name='orchestrator_3_1_8b',
+            data='question_answer/qa_train.json',
+            experiment_number=experiment,
+            orchestrator=True
+        )
 
-        # Infer baseline
-        if args.infer_baseline:
-            from inference import ask_baseline, AskRag
-            os.makedirs(f'answers/{experiment}', exist_ok=True)
-            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_2_1b'], experiment=experiment)
-            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_1_8b'], experiment=experiment)
-            ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_3_70b'], experiment=experiment)
-            rag = AskRag(
-                documents_file='question_answer/qa_train.json',
-                questions_file='question_answer/qa_test.json',
-                experiment=experiment)
-            rag.generate_responses()
+        # Finetune llama 3.2 1B instruct
+        finetune(
+            model_to_tune='downloaded_3_2_1b',
+            adapter_name='3_2_1b',
+            data='question_answer/qa_train.json',
+            experiment_number=experiment
+        )
 
-        if args.infer_finetuned:
-            from inference import ask_finetuned
-            os.makedirs(f'answers/{experiment}', exist_ok=True)
-            ask_finetuned(file='question_answer/qa_test.json',
-                          base_model='downloaded_3_2_1b',
-                          adapter=f'experiments/{experiment}/finetuned_3_2_1b',
-                          experiment=experiment)
-            ask_finetuned(file='question_answer/qa_test.json',
-                          base_model='downloaded_3_1_8b',
-                          adapter=f'experiments/{experiment}/finetuned_3_1_8b',
-                          experiment=experiment)
+        # Finetune llama 3.1 8B instruct
+        finetune(
+            model_to_tune='downloaded_3_1_8b',
+            adapter_name='3_1_8b',
+            data='question_answer/qa_train.json',
+            experiment_number=experiment
+        )
 
-        # Infer slg
-        if args.infer_slg:
-            from inference import SmallLanguageGraph
-            os.makedirs(f'answers/{experiment}', exist_ok=True)
-            slg = SmallLanguageGraph(experts_location=experiment, experiment=experiment)
-            slg.ask_slg(
-                file='question_answer/qa_test.json'
-            )
+    # Infer baseline
+    if args.infer_baseline:
+        from inference import ask_baseline, AskRag
+        os.makedirs(f'answers/{experiment}', exist_ok=True)
+        ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_2_1b'], experiment=experiment)
+        ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_1_8b'], experiment=experiment)
+        ask_baseline(file='question_answer/qa_test.json', model=CONFIG['3_3_70b'], experiment=experiment)
+        rag = AskRag(
+            documents_file='question_answer/qa_train.json',
+            questions_file='question_answer/qa_test.json',
+            experiment=experiment)
+        rag.generate_responses()
 
-        # Evaluate
-        if args.evaluate:
-            from evaluate import load_data, evaluate, pull_training_metrics
-            metrics_list = []
-            ground_truth_file = "question_answer/qa_test.json"
-            for predictions_file in os.listdir(f"answers/{experiment}"):
-                predictions, ground_truth = load_data(f'answers/{experiment}/{predictions_file}',
-                                                      ground_truth_file)
-                results = evaluate(predictions, ground_truth)
-                new_dict = {os.path.splitext(predictions_file)[0]: results}
-                metrics_list.append(new_dict)
-                os.makedirs(f"experiments/{experiment}", exist_ok=True)
-                with open(f'experiments/{experiment}/metrics.json', 'w') as f:
-                    json.dump(metrics_list, f, indent=4)
+    if args.infer_finetuned:
+        from inference import ask_finetuned
+        os.makedirs(f'answers/{experiment}', exist_ok=True)
+        ask_finetuned(file='question_answer/qa_test.json',
+                      base_model='downloaded_3_2_1b',
+                      adapter=f'experiments/{experiment}/finetuned_3_2_1b',
+                      experiment=experiment)
+        ask_finetuned(file='question_answer/qa_test.json',
+                      base_model='downloaded_3_1_8b',
+                      adapter=f'experiments/{experiment}/finetuned_3_1_8b',
+                      experiment=experiment)
 
-            # Add train and eval loss to
-            if experiment < 101: # make sure to extract training metrics only for tuned models
-                training_metrics = pull_training_metrics(f'experiments/{experiment}')
+    # Infer slg
+    if args.infer_slg:
+        from inference import SmallLanguageGraph
+        os.makedirs(f'answers/{experiment}', exist_ok=True)
+        slg = SmallLanguageGraph(experts_location=experiment, experiment=experiment)
+        slg.ask_slg(
+            file='question_answer/qa_test.json'
+        )
 
-                with open(f'experiments/{experiment}/metrics.json', "r") as f:
-                    data = json.load(f)  # Load JSON as a Python list
+    # Evaluate
+    if args.evaluate:
+        from evaluate import load_data, evaluate, pull_training_metrics
+        metrics_list = []
+        ground_truth_file = "question_answer/qa_test.json"
+        for predictions_file in os.listdir(f"answers/{experiment}"):
+            predictions, ground_truth = load_data(f'answers/{experiment}/{predictions_file}',
+                                                  ground_truth_file)
+            results = evaluate(predictions, ground_truth)
+            new_dict = {os.path.splitext(predictions_file)[0]: results}
+            metrics_list.append(new_dict)
+            os.makedirs(f"experiments/{experiment}", exist_ok=True)
+            with open(f'experiments/{experiment}/metrics.json', 'w') as f:
+                json.dump(metrics_list, f, indent=4)
 
-                data.extend(training_metrics)
+        # Add train and eval loss to
+        # if experiment < 101: # make sure to extract training metrics only for tuned models
+        if experiment == 'test_2':
+            training_metrics = pull_training_metrics(f'experiments/{experiment}')
 
-                with open(f'experiments/{experiment}/metrics.json', "w") as f:
-                    json.dump(data, f, indent=4)
+            with open(f'experiments/{experiment}/metrics.json', "r") as f:
+                data = json.load(f)  # Load JSON as a Python list
+
+            data.extend(training_metrics)
+
+            with open(f'experiments/{experiment}/metrics.json', "w") as f:
+                json.dump(data, f, indent=4)
