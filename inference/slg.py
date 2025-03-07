@@ -24,8 +24,8 @@ class SmallLanguageGraph:
         ]
 
         # Set the paths for your local model and adapter
-        base_model_path = 'downloaded_3_1_8b'
-        adapter_path = f"experiments/{self.experts_location}/finetuned_orchestrator_3_1_8b"
+        base_model_path = 'downloaded_3_2_1b'
+        adapter_path = f"experiments/{self.experts_location}/finetuned_orchestrator_3_2_1b"
 
         # Load the tokenizer (from base model)
         tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)

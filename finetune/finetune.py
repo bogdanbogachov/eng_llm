@@ -98,10 +98,16 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     training_args = TrainingArguments(
         output_dir=f"checkpoints/{experiment_number}/{adapter_name}",
-        eval_strategy="steps",  # To evaluate during training
-        eval_steps=10,
-        logging_steps=10,
-        save_steps=150,
+        num_train_epochs=25,
+
+        eval_strategy="epoch",
+        # eval_steps=100,
+
+        save_strategy="epoch",
+        # save_steps=100,
+
+        logging_steps=50,
+
         fp16=True,
         report_to="tensorboard",
         log_level="info",
@@ -109,7 +115,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
-        num_train_epochs=15,
+
         learning_rate=learning_rate,
         weight_decay=0,
         adam_beta1=0.9,
@@ -133,7 +139,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         train_dataset=tokenized_dataset["train"],
         eval_dataset=tokenized_dataset["test"],
         tokenizer=tokenizer,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)] # Number of steps without improvement
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
         )
 
     # Train the model

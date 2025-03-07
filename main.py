@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
         # Finetune an orchestrator for SLG
         finetune(
-            model_to_tune='downloaded_3_1_8b',
-            adapter_name='orchestrator_3_1_8b',
+            model_to_tune='downloaded_3_2_1b',
+            adapter_name='orchestrator_3_2_1b',
             data='question_answer/qa_train.json',
             experiment_number=experiment,
             orchestrator=True
