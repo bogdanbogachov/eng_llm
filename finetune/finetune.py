@@ -81,17 +81,17 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     # Define training arguments
     peft_params = LoraConfig(
-        lora_alpha=32,
+        lora_alpha=8,
         lora_dropout=0.05,
-        r=64,
+        r=4,
         task_type='CAUSAL_LM'
     )
 
     if orchestrator:
-        learning_rate = 1e-4
+        learning_rate = 0.001
         label_smoothing_factor = 0.01
     else:
-        learning_rate = 1e-4
+        learning_rate = 0.001
         label_smoothing_factor = 0.01
 
     os.makedirs(f'checkpoints/{experiment_number}/{adapter_name}', exist_ok=True)
@@ -111,19 +111,19 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         fp16=True,
         report_to="tensorboard",
         log_level="info",
-        logging_dir="logs",
+        logging_dir="logs_lr_3",
 
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
 
         learning_rate=learning_rate,
-        weight_decay=0,
+        weight_decay=0.001,
         adam_beta1=0.9,
         adam_beta2=0.999,
-        max_grad_norm=2,
-        warmup_ratio=0.1,
+        max_grad_norm=0.5,
+        warmup_ratio=0.03,
         lr_scheduler_type='linear',
-        gradient_accumulation_steps=1,
+        gradient_accumulation_steps=2,
         optim='adamw_torch',
         label_smoothing_factor=label_smoothing_factor,
 

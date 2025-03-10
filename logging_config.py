@@ -11,7 +11,7 @@ def setup_logger(name="text_tuning"):
     ch.setLevel(logging.DEBUG)
 
     # Create a file handler and set the level to debug
-    fh = logging.FileHandler('log_file.log')
+    fh = logging.FileHandler('log_file_lr_3.log')
     fh.setLevel(logging.INFO)
 
     # Create a formatter and set it for the handler

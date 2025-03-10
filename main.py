@@ -36,7 +36,7 @@ if __name__ == '__main__':
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
     # Experiments
-    experiment = 'test_2'
+    experiment = 'tune_lr_3'
     # Finetune
     if args.finetune:
         from finetune import finetune
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
         # Add train and eval loss to
         # if experiment < 101: # make sure to extract training metrics only for tuned models
-        if experiment == 'test_2':
+        if experiment == 'tune_lr_3':
             training_metrics = pull_training_metrics(f'experiments/{experiment}')
 
             with open(f'experiments/{experiment}/metrics.json', "r") as f:
