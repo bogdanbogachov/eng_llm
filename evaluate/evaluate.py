@@ -238,7 +238,7 @@ def pull_training_metrics(base_folder):
                     'avg_epochs_slg': total_epochs / count
                 }
             )
-        elif folder != 'slg' and folder != 'logs':
+        elif folder != 'slg' and 'logs' not in folder:
             training_log_path = os.path.join(folder_path, 'training_log.txt')
             logger.debug(training_log_path)
             if os.path.exists(training_log_path):
