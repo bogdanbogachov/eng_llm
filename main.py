@@ -40,7 +40,6 @@ if __name__ == '__main__':
     # Finetune
     if args.finetune:
         from finetune import finetune
-        shutil.rmtree('checkpoints')
         os.makedirs('experiments', exist_ok=True)
         # Finetune SLG
         for file in os.listdir("question_answer/split_by_title"):

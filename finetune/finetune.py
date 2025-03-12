@@ -83,7 +83,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
     peft_params = LoraConfig(
         lora_alpha=8,
         lora_dropout=0.05,
-        r=4,
+        r=16,
         task_type='CAUSAL_LM'
     )
 
