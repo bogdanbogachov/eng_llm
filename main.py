@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument("--infer_finetuned", type=bool, default=False)
     parser.add_argument("--download_models", type=bool, default=False)
     parser.add_argument("--finetune", type=bool, default=False)
+    parser.add_argument("--charts", type=bool, default=False)
     args = parser.parse_args()
 
     # Download models
@@ -137,3 +138,25 @@ if __name__ == '__main__':
 
             with open(f'experiments/{experiment}/metrics.json', "w") as f:
                 json.dump(data, f, indent=4)
+
+    # Build charts
+    if args.charts:
+        from evaluate import plot_finetuning_metrics
+
+        experiment_root = 'experiments'
+
+        param_folders = ['tune_lr_1', 'tune_lr_2', 'tune_lr_3']
+        param_values = [0.00001, 0.0001, 0.001]
+        plot_finetuning_metrics(experiment_root, param_folders, param_values, 'learning_rate')
+
+        param_folders = ['tune_rank_1', 'tune_rank_2', 'tune_rank_3']
+        param_values = [8, 16, 32]
+        plot_finetuning_metrics(experiment_root, param_folders, param_values, 'lora_rank')
+
+        param_folders = ['tune_grad_accum_1', 'tune_grad_accum_2', 'tune_grad_accum_3']
+        param_values = [2, 4, 8]
+        plot_finetuning_metrics(experiment_root, param_folders, param_values, 'gradient_accumulation_steps')
+
+        param_folders = ['tune_alpha_1', 'tune_alpha_2', 'tune_alpha_3', 'tune_alpha_4']
+        param_values = [8, 16, 32, 64]
+        plot_finetuning_metrics(experiment_root, param_folders, param_values, 'lora_alpha')
