@@ -48,7 +48,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
                 {"role": "assistant", "content": f"{example['title']}" }
             ]
             prompt = tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True
+                messages, tokenize=False, add_generation_prompt=False
             )
             return {"prompt": prompt}
         else:
@@ -57,7 +57,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
                 {"role": "assistant", "content": example['answer']}
             ]
             prompt = tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True
+                messages, tokenize=False, add_generation_prompt=False
             )
             return {"prompt": prompt}
 
