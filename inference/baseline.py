@@ -102,8 +102,12 @@ def ask_finetuned(file, base_model, adapter, experiment):
         # Create the pipeline
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
-        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1, temperature=0.1)
-        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        outputs = finetuned_model.generate(**inputs,
+                                           max_new_tokens=750,
+                                           num_return_sequences=1,
+                                           temperature=0.1,
+                                           eos_token_id=tokenizer.convert_tokens_to_ids("<|eot_id|>"))
+        text = tokenizer.decode(outputs[0], skip_special_tokens=False)
         output = text.split("assistant")[1]
 
         new_dict = {

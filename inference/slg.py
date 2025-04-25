@@ -46,8 +46,13 @@ class SmallLanguageGraph:
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
-        outputs = finetuned_model.generate(**inputs, max_new_tokens=10, num_return_sequences=1, temperature=0.1)
-        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        outputs = finetuned_model.generate(**inputs,
+                                           max_new_tokens=10,
+                                           num_return_sequences=1,
+                                           temperature=0.1,
+                                           eos_token_id=tokenizer.convert_tokens_to_ids("<|eot_id|>")
+                                           )
+        text = tokenizer.decode(outputs[0], skip_special_tokens=False)
         output = text.split("assistant")[1].strip()
         output = output.replace(' ', '_').replace('/', '_').lower()
         output = 'finetuned_' + output
@@ -93,8 +98,12 @@ class SmallLanguageGraph:
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
-        outputs = finetuned_model.generate(**inputs, max_new_tokens=750, num_return_sequences=1, temperature=0.1)
-        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        outputs = finetuned_model.generate(**inputs,
+                                           max_new_tokens=750,
+                                           num_return_sequences=1,
+                                           temperature=0.1,
+                                           eos_token_id=tokenizer.convert_tokens_to_ids("<|eot_id|>"))
+        text = tokenizer.decode(outputs[0], skip_special_tokens=False)
 
         logger.debug(f"Output: {text}")
         logger.info("Inference complete.")
