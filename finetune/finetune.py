@@ -30,7 +30,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
     logger.info(f"Memory reserved: {torch.cuda.memory_reserved() / 1024 ** 2:.2f} MB")
 
     tokenizer = AutoTokenizer.from_pretrained(model_to_tune)
-    tokenizer.pad_token = tokenizer.eos_token
+    # tokenizer.pad_token = tokenizer.eos_token
 
     dataset = load_dataset("json", data_files=data,  split="train")
     logger.debug(f"Dataset after loading {dataset}")
@@ -65,6 +65,11 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
     new_dataset = dataset.map(apply_chat_template)
     new_dataset = new_dataset.train_test_split(0.20)
     logger.debug(f"Dataset after splitting {new_dataset}")
+
+    if tokenizer.pad_token is None:
+        tokenizer.add_special_tokens({'pad_token': '<|pad|>'})
+        model.resize_token_embeddings(len(tokenizer))
+        tokenizer.pad_token = '<|pad|>'
 
     # Tokenize the data
     def tokenize_function(example):
@@ -111,7 +116,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         fp16=True,
         report_to="tensorboard",
         log_level="info",
-        logging_dir="logs_lr_3",
+        logging_dir="logs_experiment_name",
 
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
