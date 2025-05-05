@@ -28,7 +28,7 @@ class SmallLanguageGraph:
         adapter_path = f"experiments/{self.experts_location}/finetuned_orchestrator_3_2_1b"
 
         # Load the tokenizer (from base model)
-        tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True)
 
         # Load the base model from local storage
         model = AutoModelForCausalLM.from_pretrained(
@@ -80,7 +80,7 @@ class SmallLanguageGraph:
         logger.info(f"Model used to infer: {adapter}")
 
         # Load the tokenizer (from base model)
-        tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True)
 
         # Load the base model from local storage
         model = AutoModelForCausalLM.from_pretrained(
