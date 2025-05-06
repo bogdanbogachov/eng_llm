@@ -47,6 +47,7 @@ class SmallLanguageGraph:
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
+        logger.debug(f'Tokenized prompt for orchestrator: {inputs}')
         outputs = finetuned_model.generate(**inputs,
                                            max_new_tokens=10,
                                            num_return_sequences=1,
@@ -100,6 +101,7 @@ class SmallLanguageGraph:
         # Inference
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors='pt', padding=False, truncation=True).to("cuda")
+        logger.debug(f'Tokenized prompt for expert: {inputs}')
         outputs = finetuned_model.generate(**inputs,
                                            max_new_tokens=750,
                                            num_return_sequences=1,
