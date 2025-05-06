@@ -109,7 +109,7 @@ def ask_finetuned(file, base_model, adapter, experiment):
                                            num_return_sequences=1,
                                            temperature=0.1,
                                            eos_token_id=tokenizer.convert_tokens_to_ids("<|eot_id|>"))
-        text = tokenizer.decode(outputs[0], skip_special_tokens=False)
+        text = tokenizer.decode(outputs[0], skip_special_tokens=True)
         output = text.split("assistant")[1]
 
         new_dict = {
@@ -123,7 +123,7 @@ def ask_finetuned(file, base_model, adapter, experiment):
         with open(f"answers/{experiment}/{adapter.split('/')[-1]}.json", 'w') as f:
             json.dump(answers, f, indent=4)
 
-    # 🔥 Purge all GPU memory after inference
+    # Purge all GPU memory after inference
     del model
     del tokenizer
     torch.cuda.empty_cache()
