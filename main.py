@@ -1,9 +1,8 @@
-from config import CONFIG
-
 import argparse
 import json
 import os
-import shutil
+
+from config import CONFIG
 
 
 if __name__ == '__main__':
@@ -11,6 +10,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--create_qa", type=bool, default=False)
     parser.add_argument("--split_qa", type=bool, default=False)
+    parser.add_argument("--combine_all_qa", type=bool, default=False)
+    parser.add_argument("--data_overlap_check", type=bool, default=False)
     parser.add_argument("--evaluate", type=bool, default=False)
     parser.add_argument("--infer_slg", type=bool, default=False)
     parser.add_argument("--infer_baseline", type=bool, default=False)
@@ -29,15 +30,34 @@ if __name__ == '__main__':
     # Question-answers
     if args.create_qa:
         from question_answer import populate
-        populate(file_to_read='question_answer/srm.pdf')
+        from question_answer.srm_reader import read_doc
+        from question_answer.om_reader import prepare_overhaul_manual
+
+        # Create SRM QA pairs
+        df_srm = read_doc('question_answer/srm.pdf')
+        populate(df_srm, 'srm_qa')
+
+        # Create OM QA pairs
+        df_om = prepare_overhaul_manual(overhaul_manual='question_answer/om.pdf')
+        populate(df_om, 'om_qa')
+
+    if args.combine_all_qa:
+        from question_answer import combine_all_qa
+        combine_all_qa()
+
 
     if args.split_qa:
         from question_answer import split_qa_pairs_by_title, split_train_test
-        split_train_test('question_answer/qa_pairs.json')
+        split_train_test('question_answer/qa.json')
         split_qa_pairs_by_title('question_answer/qa_train.json')
 
+    # Measure data overlap
+    if args.data_overlap_check:
+        from evaluate import compute_overshadowing
+        compute_overshadowing(prefix_length=3)
+
     # Experiments
-    experiment = 'experiment_name'
+    experiment = 'pad_token_added'
     # Finetune
     if args.finetune:
         from finetune import finetune
@@ -128,7 +148,7 @@ if __name__ == '__main__':
 
         # Add train and eval loss to
         # if experiment < 101: # make sure to extract training metrics only for tuned models
-        if experiment == 'experiment_name':
+        if experiment == 'pad_token_added':
             training_metrics = pull_training_metrics(f'experiments/{experiment}')
 
             with open(f'experiments/{experiment}/metrics.json', "r") as f:
@@ -146,7 +166,7 @@ if __name__ == '__main__':
         experiment_root = 'experiments'
 
         param_folders = ['tune_lr_1', 'tune_lr_2', 'tune_lr_3']
-        param_values = [0.00001, 0.0001, 0.001]
+        param_values = ['1e-5', '1e-4', '1e-3']
         plot_finetuning_metrics(experiment_root, param_folders, param_values, 'learning_rate')
 
         param_folders = ['tune_rank_1', 'tune_rank_2', 'tune_rank_3']

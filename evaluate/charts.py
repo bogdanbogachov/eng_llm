@@ -1,6 +1,7 @@
 import os
 import json
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 from logging_config import logger
 
@@ -58,12 +59,14 @@ def plot_finetuning_metrics(experiment_root, param_folders, param_values, parame
                 ax.scatter(param_values_sorted, metric_values_sorted, label=model_name)
                 ax.plot(param_values_sorted, metric_values_sorted, linestyle='-', alpha=0.7)
 
-        ax.set_title(f"{metric} vs {parameter}")
-        ax.set_xlabel(f"{parameter}")
-        ax.set_ylabel(metric)
+        ax.set_title(f"{metric} vs {parameter}", fontsize=16)
+        ax.set_xlabel(f"{parameter}", fontsize=16)
+        ax.set_ylabel(metric, fontsize=16)
         ax.set_ylim(0, max(max(val for _, val in values) for values in metric_data[metric].values() if values) * 1.1)
-        ax.legend()
+        ax.legend(loc='best', fontsize=13, framealpha=0.5, alignment='left')
         ax.grid(True)
+        ax.tick_params(axis='both', which='major', labelsize=16)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
 
     plt.tight_layout()
 

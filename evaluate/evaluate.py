@@ -1,8 +1,6 @@
 import json
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from rouge_score import rouge_scorer
-from logging_config import logger
-from config import CONFIG
 from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
@@ -11,6 +9,10 @@ import re
 import nltk
 from nltk.translate.meteor_score import meteor_score
 from nltk.tokenize import word_tokenize
+from transformers import pipeline
+
+from logging_config import logger
+from config import CONFIG
 
 
 # Download WordNet for synonym matching
@@ -102,15 +104,35 @@ def calculate_meteor_score(reference, candidate):
     return score
 
 
+def check_entailment(reference: str, candidate: str, nli_model) -> int:
+    """
+    Check if the hypothesis (generated answer) is entailed by the premise (reference answer).
+
+    Returns:
+        1 if ENTALIMENT is the top prediction, 0 otherwise.
+    """
+    result = nli_model({
+        "reference": reference,
+        "candidate": candidate
+    })[0]
+
+    return int(result['label'] == "ENTAILMENT")
+
+
 def evaluate(predictions, ground_truth):
     """
     Evaluate predictions against ground truth using BLEU, ROUGE, and Exact Match.
     """
+
+    # Load once and reuse
+    nli_model = pipeline("text-classification", model="roberta-large-mnli")
+
     bleu_scores = []
     rouge_scores = {'rouge1': [], 'rouge2': [], 'rougeL': []}
     exact_matches = []
-    # ai_experts = []
+    ai_experts = []
     meteor_scores = []
+    bert_scores = []
     logger.info(f"Evaluation has started.")
     counter = 0
     threshold = 10
@@ -158,15 +180,20 @@ def evaluate(predictions, ground_truth):
         logger.debug("Calculating Exact Match (EM) score.")
         exact_matches.append(calculate_exact_match(gt_answer, pred_answer))
 
-        # # AI expert
-        # logger.debug("Calculating AI expert score.")
-        # ai_expert = calculate_ai_expert(gt_answer, pred_answer)
-        # ai_experts.append(ai_expert)
+        # AI expert
+        logger.debug("Calculating AI expert score.")
+        ai_expert = calculate_ai_expert(gt_answer, pred_answer)
+        ai_experts.append(ai_expert)
 
         # Meteor
         logger.debug("Calculating METEOR score.")
         meteor = calculate_meteor_score(gt_answer, pred_answer)
         meteor_scores.append(meteor)
+
+        # BERT
+        logger.debug("Calculating BERT score.")
+        bert = check_entailment(gt_answer, pred_answer, nli_model=nli_model)
+        bert_scores.append(bert)
 
     # Aggregate scores
     avg_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0

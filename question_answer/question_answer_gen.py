@@ -2,15 +2,14 @@ from huggingface_hub import InferenceClient
 from transformers import AutoTokenizer
 from huggingface_hub import login
 from sklearn.model_selection import train_test_split
+from collections import defaultdict
+from together import Together
+import json
+import time
+import os
 
 from logging_config import logger
 from config import CONFIG
-
-from collections import defaultdict
-import json
-import time
-import math
-import os
 
 
 def generate(text):
@@ -34,10 +33,10 @@ def generate(text):
     client = InferenceClient()
 
     questions = tuple()
-    # An average word has 4 letter, an average sentence has 20 words, thus I divide text by 80 to get the number
-    # of sentences. The hypothesis behind is that each sentence should have a question.
+    # An average word has 4 letters, an average sentence has 20 words. Thus, I divide texts by 80 to get the number
+    # of sentences. The hypothesis behind this is that each sentence should have a question.
     # number_of_questions = max(1, math.ceil(int(len(text)/(4*20))))
-    number_of_questions = 28 # 28 was empirically proven to be a sufficient amount of questions
+    number_of_questions = 28 # 28 was empirically proven to be enough questions
     logger.info(f"Number of questions: {number_of_questions}")
     for i in range(0, number_of_questions):
         logger.info(f"Working on question # {i}")
@@ -57,24 +56,65 @@ def generate(text):
         )
         questions += (llm_response, )
 
-        time.sleep(1) # Sleep for 1 second to avoid HF API crash
+        time.sleep(1) # Sleep for 1 second to avoid an API crash
 
     return questions
 
 
-def populate(file_to_read):
-    from .pdf_reader import read_doc
-    df = read_doc(file_to_read)
+def generate_with_together_ai(text):
+    """
+        Generates questions for ground truth texts.
+        Args:
+            - number of questions to generate.
+        Returns:
+            - a tuple with all generated questions.
+    """
+    client = Together(api_key=CONFIG['together_ai_api_key'])
+
+    system_prompt = CONFIG['system_prompt']
+    query_prompt = CONFIG["query_prompt"]
+    max_new_tokens = CONFIG['max_new_tokens']
+    seed = CONFIG['seed']
+    temperature = CONFIG['temperature']
+
+    questions = tuple()
+    # An average word has 4 letters, an average sentence has 20 words. Thus, I divide texts by 80 to get the number
+    # of sentences. The hypothesis behind this is that each sentence should have a question.
+    # number_of_questions = max(1, math.ceil(int(len(text)/(4*20))))
+    number_of_questions = 28 # 28 was empirically proven to be enough questions
+    logger.info(f"Number of questions: {number_of_questions}")
+    for i in range(0, number_of_questions):
+        logger.info(f"Working on question # {i}")
+        response = client.chat.completions.create(
+            model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": query_prompt.format(text=text, questions=questions)}
+            ],
+            max_tokens=max_new_tokens,
+            temperature=temperature,
+            seed=seed
+        )
+        llm_response = response.choices[0].message.content
+
+        questions += (llm_response,)
+
+        time.sleep(1)  # Sleep for 1 second to avoid an API crash
+
+    return questions
+
+
+def populate(df, qa_file_name):
     index_to_start_qa_gen = 0
 
     # Check if the file exists
-    if not os.path.exists("question_answer/qa_pairs.json"):
+    if not os.path.exists(f"question_answer/{qa_file_name}.json"):
         # If the file does not exist, initialize it as an empty list
-        with open("question_answer/qa_pairs.json", "w") as json_file:
+        with open(f"question_answer/{qa_file_name}.json", "w") as json_file:
             json.dump([], json_file, indent=4)
     else:
         # Load JSON data
-        json_file_path = "question_answer/qa_pairs.json"
+        json_file_path = f"question_answer/{qa_file_name}.json"
         with open(json_file_path, "r") as file:
             data = json.load(file)  # Assumes the JSON file contains a list of dictionaries
 
@@ -113,7 +153,7 @@ def populate(file_to_read):
     for index, row in df.iterrows():
         if index >= index_to_start_qa_gen:
             logger.info(f"Working on text # {index}")
-            questions = generate(row['text'])
+            questions = generate_with_together_ai(row['text'])
             for i, question in enumerate(questions):
                 new_data = {
                     'chapter': row['chapter'],
@@ -123,7 +163,7 @@ def populate(file_to_read):
                 }
 
                 # Now, open the file in read-write mode
-                with open("question_answer/qa_pairs.json", "r+") as json_file:
+                with open(f"question_answer/{qa_file_name}.json", "r+") as json_file:
                     # Load the existing data
                     try:
                         existing_data = json.load(json_file)
@@ -139,6 +179,27 @@ def populate(file_to_read):
                     json_file.truncate()  # Remove any leftover content
 
             logger.info(40*'-')
+
+    return None
+
+
+def combine_all_qa():
+    folder_path = './question_answer'
+
+    all_qa = []
+
+    for filename in os.listdir(folder_path):
+        if 'qa' in filename and filename.endswith('.json'):
+            file_path = os.path.join(folder_path, filename)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                try:
+                    data = json.load(f)
+                    all_qa.extend(data)
+                except Exception as e:
+                    logger.info(f"Error reading {filename}: {e}")
+
+    with open(os.path.join(folder_path, 'qa.json'), 'w', encoding='utf-8') as out_file:
+        json.dump(all_qa, out_file, indent=4)
 
     return None
 
@@ -181,7 +242,8 @@ def split_qa_pairs_by_title(data_file):
     # Save each group as a separate JSON file
     for title, entries in grouped_data.items():
         # Create a valid filename by replacing spaces and special characters
-        filename = f"{title.replace(' ', '_').replace('/', '_').lower()}.json"
+        title = title.replace(' ', '_').replace('/', '_').replace('\n', '_').lower()
+        filename = f"{title}.json"
 
         os.makedirs('question_answer/split_by_title', exist_ok=True)
         with open(f"question_answer/split_by_title/{filename}", "w", encoding="utf-8") as file:
