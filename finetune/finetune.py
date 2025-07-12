@@ -154,13 +154,15 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
     # Save the model and tokenizer
     if slg:
         os.makedirs(f'experiments/{experiment_number}/slg', exist_ok=True)
-        trainer.model.save_pretrained(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}")
+        trainer.model.save_pretrained(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}",
+                                      save_adapter=True)
         tokenizer.save_pretrained(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}")
         with open(f"experiments/{experiment_number}/slg/finetuned_{adapter_name}/training_log.txt", "a") as log_file:
             log_file.write(str(trainer.state.log_history))
     else:
         os.makedirs(f'experiments/{experiment_number}', exist_ok=True)
-        trainer.model.save_pretrained(f"experiments/{experiment_number}/finetuned_{adapter_name}")
+        trainer.model.save_pretrained(f"experiments/{experiment_number}/finetuned_{adapter_name}",
+                                      save_adapter=True)
         tokenizer.save_pretrained(f"experiments/{experiment_number}/finetuned_{adapter_name}")
         with open(f"experiments/{experiment_number}/finetuned_{adapter_name}/training_log.txt", "a") as log_file:
             log_file.write(str(trainer.state.log_history))
