@@ -67,9 +67,8 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
     logger.debug(f"Dataset after splitting {new_dataset}")
 
     if tokenizer.pad_token is None:
-        tokenizer.add_special_tokens({'pad_token': '<|pad|>'})
-        model.resize_token_embeddings(len(tokenizer))
-        tokenizer.pad_token = '<|pad|>'
+        # Set an existing special token as a padding token, this way we can avoid model resizing
+        tokenizer.pad_token = "<|reserved_special_token_15|>"
 
     # Tokenize the data
     def tokenize_function(example):

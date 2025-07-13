@@ -57,7 +57,7 @@ if __name__ == '__main__':
         compute_overshadowing(prefix_length=3)
 
     # Experiments
-    experiment = 'pad_token_added'
+    experiment = 'j_lr_0.00001'
     # Finetune
     if args.finetune:
         from finetune import finetune
@@ -147,17 +147,15 @@ if __name__ == '__main__':
                 json.dump(metrics_list, f, indent=4)
 
         # Add train and eval loss to
-        # if experiment < 101: # make sure to extract training metrics only for tuned models
-        if experiment == 'pad_token_added':
-            training_metrics = pull_training_metrics(f'experiments/{experiment}')
+        training_metrics = pull_training_metrics(f'experiments/{experiment}')
 
-            with open(f'experiments/{experiment}/metrics.json', "r") as f:
-                data = json.load(f)  # Load JSON as a Python list
+        with open(f'experiments/{experiment}/metrics.json', "r") as f:
+            data = json.load(f)  # Load JSON as a Python list
 
-            data.extend(training_metrics)
+        data.extend(training_metrics)
 
-            with open(f'experiments/{experiment}/metrics.json', "w") as f:
-                json.dump(data, f, indent=4)
+        with open(f'experiments/{experiment}/metrics.json', "w") as f:
+            json.dump(data, f, indent=4)
 
     # Build charts
     if args.charts:
