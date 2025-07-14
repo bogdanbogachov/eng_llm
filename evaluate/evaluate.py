@@ -6,9 +6,9 @@ import re
 import nltk
 from nltk.translate.meteor_score import meteor_score
 from nltk.tokenize import word_tokenize
-from transformers import pipeline
 import time
 from openai import OpenAI
+import numpy as np
 
 from logging_config import logger
 from config import CONFIG
@@ -58,6 +58,42 @@ def calculate_exact_match(reference, candidate):
     return int(reference.strip() == candidate.strip())
 
 
+# Function to calculate METEOR scores
+def calculate_meteor_score(reference, candidate):
+    """
+    Calculate meteor score between a reference and a candidate answer.
+    """
+    score = meteor_score(references=[word_tokenize(reference)], hypothesis=word_tokenize(candidate))
+    return score
+
+
+def get_embedding(text, client):
+    response = client.embeddings.create(
+        model='text-embedding-3-small',
+        input=text
+    )
+
+    return np.array(response.data[0].embedding)
+
+
+def check_entailment(reference: str, candidate: str, api_client) -> float:
+    """
+    Calculates cosine similarity between the OpenAI embeddings for reference and candidate.
+    Returns:
+        Cosine similarity score (float, range -1 to 1).
+    """
+    # Get embeddings for each text
+    emb_ref = get_embedding(reference, api_client)
+    emb_cand = get_embedding(candidate, api_client)
+
+    # Compute cosine similarity
+    similarity = np.dot(emb_ref, emb_cand) / (np.linalg.norm(emb_ref) * np.linalg.norm(emb_cand))
+    # Normalize from 0 to 1
+    similarity = (similarity + 1) / 2
+
+    return similarity
+
+
 def calculate_ai_expert(reference, candidate, api_client):
     """
     Calculate AI expert scores between a reference and a candidate answer using OpenAI GPT-4.1 Nano.
@@ -90,44 +126,20 @@ def calculate_ai_expert(reference, candidate, api_client):
         return 0
 
 
-# Function to calculate METEOR scores
-def calculate_meteor_score(reference, candidate):
-    """
-    Calculate meteor score between a reference and a candidate answer.
-    """
-    score = meteor_score(references=[word_tokenize(reference)], hypothesis=word_tokenize(candidate))
-    return score
-
-
-def check_entailment(reference: str, candidate: str, nli_model) -> int:
-    """
-    Check if the hypothesis (generated answer) is entailed by the premise (reference answer).
-
-    Returns:
-        1 if ENTALIMENT is the top prediction, 0 otherwise.
-    """
-    result = nli_model({"text": reference, "text_pair": candidate}, truncation=True, max_length=512)
-
-    return int(result['label'] == "ENTAILMENT")
-
-
 def evaluate(predictions, ground_truth):
     """
     Evaluate predictions against ground truth using BLEU, ROUGE, and Exact Match.
     """
 
-    # Entailment model
-    nli_model = pipeline("text-classification", model="roberta-large-mnli")
-
-    # AI expert model
+    # OpenAI api key
     client = OpenAI(api_key=CONFIG['open_ai_api_key'])
 
     bleu_scores = []
     rouge_scores = {'rouge1': [], 'rouge2': [], 'rougeL': []}
     exact_matches = []
-    ai_experts = []
     meteor_scores = []
-    bert_scores = []
+    entailment_scores = []
+    ai_experts = []
     logger.info(f"Evaluation has started.")
     counter = 0
     threshold = 10
@@ -175,28 +187,28 @@ def evaluate(predictions, ground_truth):
         logger.debug("Calculating Exact Match (EM) score.")
         exact_matches.append(calculate_exact_match(gt_answer, pred_answer))
 
-        # AI expert
-        logger.debug("Calculating AI expert score.")
-        ai_expert = calculate_ai_expert(gt_answer, pred_answer, api_client=client)
-        ai_experts.append(ai_expert)
-
         # Meteor
         logger.debug("Calculating METEOR score.")
         meteor = calculate_meteor_score(gt_answer, pred_answer)
         meteor_scores.append(meteor)
 
-        # BERT
-        logger.debug("Calculating BERT score.")
-        bert = check_entailment(gt_answer, pred_answer, nli_model=nli_model)
-        bert_scores.append(bert)
+        # Entailment
+        logger.debug("Calculating entailment score.")
+        entailment = check_entailment(gt_answer, pred_answer, api_client=client)
+        entailment_scores.append(entailment)
+
+        # AI expert
+        logger.debug("Calculating AI expert score.")
+        ai_expert = calculate_ai_expert(gt_answer, pred_answer, api_client=client)
+        ai_experts.append(ai_expert)
 
     # Aggregate scores
     avg_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0
     avg_rouge = {key: sum(rouge_scores[key]) / len(rouge_scores[key]) for key in rouge_scores.keys()}
     avg_exact_match = sum(exact_matches) / len(exact_matches) if exact_matches else 0
-    avg_ai_expert = sum(ai_experts) / len(ai_experts) if ai_experts else 0
     avg_meteor = sum(meteor_scores) / len(meteor_scores) if meteor_scores else 0
-    avg_bert = sum(bert_scores) / len(bert_scores) if bert_scores else 0
+    avg_entailment = sum(entailment_scores) / len(entailment_scores) if entailment_scores else 0
+    avg_ai_expert = sum(ai_experts) / len(ai_experts) if ai_experts else 0
     logger.info(f"Evaluation has been completed.")
     logger.info(40*'-')
 
@@ -204,9 +216,9 @@ def evaluate(predictions, ground_truth):
         "BLEU": avg_bleu,
         "ROUGE": avg_rouge,
         "Exact Match": avg_exact_match,
-        "AI Expert": avg_ai_expert,
         "METEOR": avg_meteor,
-        "BERT": avg_bert
+        "Entailment": avg_entailment,
+        "AI Expert": avg_ai_expert
     }
 
 
