@@ -38,7 +38,7 @@ class SmallLanguageGraph:
         )
 
         # Apply the LoRA adapter on top
-        model.resize_token_embeddings(len(tokenizer)) # make sure the raw model has the same embedding size as adapter
+        # model.resize_token_embeddings(len(tokenizer)) # make sure the raw model has the same embedding size as adapter
         finetuned_model = PeftModel.from_pretrained(model, adapter_path)
 
         # Ensure the model is fully on GPU

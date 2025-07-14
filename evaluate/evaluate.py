@@ -1,15 +1,14 @@
 import json
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from rouge_score import rouge_scorer
-from huggingface_hub import InferenceClient
-from transformers import AutoTokenizer
-from huggingface_hub import login
 import os
 import re
 import nltk
 from nltk.translate.meteor_score import meteor_score
 from nltk.tokenize import word_tokenize
 from transformers import pipeline
+import time
+from openai import OpenAI
 
 from logging_config import logger
 from config import CONFIG
@@ -59,39 +58,35 @@ def calculate_exact_match(reference, candidate):
     return int(reference.strip() == candidate.strip())
 
 
-def calculate_ai_expert(reference, candidate):
+def calculate_ai_expert(reference, candidate, api_client):
     """
-    Calculate AI expert scores between a reference and a candidate answer.
+    Calculate AI expert scores between a reference and a candidate answer using OpenAI GPT-4.1 Nano.
     """
-    api_key = CONFIG['api_key']
-    model_id = CONFIG['3_3_70b']
     ai_expert_prompt = CONFIG['ai_expert_prompt']
     query_expert_prompt = CONFIG["query_expert_prompt"]
     max_new_tokens = CONFIG['max_new_tokens']
-    seed = CONFIG['seed']
     temperature = CONFIG['temperature']
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-    login(api_key)
-    client = InferenceClient()
-    message = [
-        {"role": "system", "content": ai_expert_prompt},
-        {"role": "user", "content": query_expert_prompt.format(text_1=reference, text_2=candidate)}
-    ]
-
-    # apply the chat template to the messages
-    total = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
-    llm_response = client.text_generation(
-        total,
-        model=model_id,
-        max_new_tokens=max_new_tokens,
-        seed=seed,
-        temperature=temperature
-    )
+    try:
+        response = api_client.chat.completions.create(
+            model="gpt-4.1-nano-2025-04-14",
+            messages=[
+                {"role": "system", "content": ai_expert_prompt},
+                {"role": "user", "content": query_expert_prompt.format(text_1=reference, text_2=candidate)},
+            ],
+            max_tokens=max_new_tokens,
+            temperature=temperature
+        )
+        llm_response = response.choices[0].message.content.strip()
+        time.sleep(1)
+    except Exception as e:
+        logger.info(f"API call failed: {e}")
+        return 0
 
     try:
         return int(llm_response)
-    except Exception:
+    except Exception as e:
+        logger.info(f"Could not convert response to int: '{llm_response}' -- {e}")
         return 0
 
 
@@ -111,10 +106,7 @@ def check_entailment(reference: str, candidate: str, nli_model) -> int:
     Returns:
         1 if ENTALIMENT is the top prediction, 0 otherwise.
     """
-    result = nli_model({
-        "reference": reference,
-        "candidate": candidate
-    })[0]
+    result = nli_model({"text": reference, "text_pair": candidate}, truncation=True, max_length=512)
 
     return int(result['label'] == "ENTAILMENT")
 
@@ -124,8 +116,11 @@ def evaluate(predictions, ground_truth):
     Evaluate predictions against ground truth using BLEU, ROUGE, and Exact Match.
     """
 
-    # Load once and reuse
+    # Entailment model
     nli_model = pipeline("text-classification", model="roberta-large-mnli")
+
+    # AI expert model
+    client = OpenAI(api_key=CONFIG['open_ai_api_key'])
 
     bleu_scores = []
     rouge_scores = {'rouge1': [], 'rouge2': [], 'rougeL': []}
@@ -182,7 +177,7 @@ def evaluate(predictions, ground_truth):
 
         # AI expert
         logger.debug("Calculating AI expert score.")
-        ai_expert = calculate_ai_expert(gt_answer, pred_answer)
+        ai_expert = calculate_ai_expert(gt_answer, pred_answer, api_client=client)
         ai_experts.append(ai_expert)
 
         # Meteor
@@ -198,19 +193,20 @@ def evaluate(predictions, ground_truth):
     # Aggregate scores
     avg_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0
     avg_rouge = {key: sum(rouge_scores[key]) / len(rouge_scores[key]) for key in rouge_scores.keys()}
-    exact_match_score = sum(exact_matches) / len(exact_matches) if exact_matches else 0
-    # ai_expert_score = sum(ai_experts) / len(ai_experts) if ai_experts else 0
+    avg_exact_match = sum(exact_matches) / len(exact_matches) if exact_matches else 0
+    avg_ai_expert = sum(ai_experts) / len(ai_experts) if ai_experts else 0
     avg_meteor = sum(meteor_scores) / len(meteor_scores) if meteor_scores else 0
+    avg_bert = sum(bert_scores) / len(bert_scores) if bert_scores else 0
     logger.info(f"Evaluation has been completed.")
     logger.info(40*'-')
-    # time.sleep(30)
 
     return {
         "BLEU": avg_bleu,
         "ROUGE": avg_rouge,
-        "Exact Match": exact_match_score,
-        # "AI Expert": ai_expert_score
-        "METEOR": avg_meteor
+        "Exact Match": avg_exact_match,
+        "AI Expert": avg_ai_expert,
+        "METEOR": avg_meteor,
+        "BERT": avg_bert
     }
 
 

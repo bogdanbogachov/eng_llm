@@ -4,6 +4,9 @@ api_key: 'key'
 # Together AI
 together_ai_api_key: 'key'
 
+# Open AI
+open_ai_api_key: "key"
+
 # HF call model parameters
 max_new_tokens: 750
 seed: 42
