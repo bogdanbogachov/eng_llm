@@ -10,6 +10,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--create_qa", type=bool, default=False)
     parser.add_argument("--split_qa", type=bool, default=False)
+    parser.add_argument("--inflate_overshadowing", type=bool, default=False)
     parser.add_argument("--combine_all_qa", type=bool, default=False)
     parser.add_argument("--data_overlap_check", type=bool, default=False)
     parser.add_argument("--evaluate", type=bool, default=False)
@@ -46,6 +47,12 @@ if __name__ == '__main__':
         combine_all_qa()
 
 
+    if args.inflate_overshadowing:
+        from question_answer import inflate_qa_answers_with_file_inputs
+        inflate_qa_answers_with_file_inputs("question_answer/qa.json",
+                                            "question_answer/inflating_material.json")
+
+
     if args.split_qa:
         from question_answer import split_qa_pairs_by_title, split_train_test
         split_train_test('question_answer/qa.json')
@@ -54,10 +61,10 @@ if __name__ == '__main__':
     # Measure data overlap
     if args.data_overlap_check:
         from evaluate import compute_overshadowing
-        compute_overshadowing(prefix_length=3)
+        compute_overshadowing(prefix_length=20)
 
     # Experiments
-    experiment = 'j_lr_0_00001'
+    experiment = 'j_la_64'
     # Finetune
     if args.finetune:
         from finetune import finetune
