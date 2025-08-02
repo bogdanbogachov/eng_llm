@@ -2,151 +2,109 @@
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
-        "question": "Where can ordering information for related publications be found?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What section of the publication contains information on ordering related publications?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
         "question": "What is the recommended procedure for obtaining the necessary information to overhaul a starter motor assembly, considering both the general manufacturer's instructions and specific guidance for TCM starters?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the importance of consulting the specified form for TCM starters during the overhaul process of the starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the relevance of the manufacturer's instructions to the overhaul process of the starter motor assembly, and where can additional specific guidance be found?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What documentation is referenced for TCM starter overhaul procedures in addition to the manufacturer's instructions?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the relationship between the manufacturer's instructions and the overhaul process of the starter motor assembly as described in the guidelines?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "For overhauling a TCM starter motor assembly, where can the relevant overhaul instructions be found?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What specific action is required to ensure that the starter motor assembly overhaul is done correctly, according to the provided guidelines and manufacturer's recommendations?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "How does the requirement to follow the manufacturer's instructions impact the overall process of overhauling a starter motor assembly, particularly for those manufactured by TCM?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What additional resource is provided for guidance on overhauling starters specifically from the manufacturer TCM, beyond the standard manufacturer's instructions?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the first step that should be taken when overhauling a starter motor assembly to ensure compliance with the recommended procedures?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "answer": "NOTICE: All checkup timelines, replacement periods, major service intervals, the check method, operational limits, rotation limits, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled Cessna-certified components. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, replacement periods, major service intervals, the check method, operational limits, rotation limits, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
         "question": "What is the primary source of guidance for ensuring that the overhaul of the starter motor assembly is performed correctly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "answer": "ALERT: All checkup timelines, part replacement schedules, overhaul cycles, the check method, operational limits, usage cycles, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, part replacement schedules, overhaul cycles, the check method, operational limits, usage cycles, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the role of TCM Form X30592 in the context of overhauling a starter motor assembly manufactured by TCM?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "question": "What section of the publication contains information on ordering related publications?",
+        "answer": "NOTICE: All checkup timelines, changeover timelines, refurbishment limits, the check method, lifespan thresholds, usage cycles, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by non-Cessna organizations, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, changeover timelines, refurbishment limits, the check method, lifespan thresholds, usage cycles, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
-        "question": "For the purpose of overhauling a starter motor assembly, what specific form is referenced for starters manufactured by TCM in addition to the general overhaul guidelines?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "question": "How does the requirement to follow the manufacturer's instructions impact the overall process of overhauling a starter motor assembly, particularly for those manufactured by TCM?",
+        "answer": "CAUTION: All maintenance intervals, part replacement schedules, overhaul cycles, the check method, durability limits, rotation limits, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All maintenance intervals, part replacement schedules, overhaul cycles, the check method, durability limits, rotation limits, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
-        "question": "What information is necessary to consult before proceeding with the overhaul of a starter motor assembly according to the provided guidelines?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What information is provided to facilitate the overhaul process of starter motor assemblies from different manufacturers, such as TCM, in accordance with the given guidelines?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "When overhauling a starter motor assembly, what is the significance of referencing both the manufacturer's instructions and the specific form provided for TCM starters?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What documentation is required to ensure that the overhaul of a TCM starter motor assembly is conducted in accordance with the recommended procedures?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "In accordance with the provided guidelines, where should one look for specific instructions when the starter motor in question is a TCM starter, as opposed to another type of starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
-    },
-    {
-        "chapter": null,
-        "title": "STARTER MOTOR OVERHAUL",
-        "question": "What instructions should be followed to overhaul the starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "question": "Where can ordering information for related publications be found?",
+        "answer": "IMPORTANT NOTICE: All checkup timelines, replacement periods, major service intervals, the inspection procedure, operational limits, usage cycles, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled Cessna-certified components. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by non-Cessna organizations, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, replacement periods, major service intervals, the inspection procedure, operational limits, usage cycles, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
         "question": "How can one obtain the necessary information to order related publications for overhauling a starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "answer": "NOTICE: All inspection schedules, part replacement schedules, major service intervals, the assessment technique, operational limits, rotation limits, etc., endorsed by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs are invalid and the purchaser is warned not to rely on such data for non-Cessna parts. All inspection schedules, part replacement schedules, major service intervals, the assessment technique, operational limits, rotation limits, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What documentation is referenced for TCM starter overhaul procedures in addition to the manufacturer's instructions?",
+        "answer": "ATTENTION: All maintenance intervals, part replacement schedules, refurbishment limits, the assessment technique, operational limits, rotation limits, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs are invalid and the purchaser is warned not to rely on such data for non-Cessna parts. All maintenance intervals, part replacement schedules, refurbishment limits, the assessment technique, operational limits, rotation limits, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What is the relevance of the manufacturer's instructions to the overhaul process of the starter motor assembly, and where can additional specific guidance be found?",
+        "answer": "NOTICE: All checkup timelines, part replacement schedules, overhaul cycles, the check method, lifespan thresholds, rotation limits, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs are not suitable and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, part replacement schedules, overhaul cycles, the check method, lifespan thresholds, rotation limits, etc., for such non-Cessna parts must be obtained from the vendor or originator of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What is the first step that should be taken when overhauling a starter motor assembly to ensure compliance with the recommended procedures?",
+        "answer": "ALERT: All checkup timelines, replacement periods, overhaul cycles, the inspection procedure, lifespan thresholds, cycle thresholds, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by non-Cessna organizations, then the data in Cessna’s maintenance/service manuals and parts catalogs are not suitable and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, replacement periods, overhaul cycles, the inspection procedure, lifespan thresholds, cycle thresholds, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
         "question": "What is the significance of referring to the manufacturer's instructions for overhauling the starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "answer": "ATTENTION: All maintenance intervals, changeover timelines, major service intervals, the check method, operational limits, usage cycles, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by non-Cessna organizations, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All maintenance intervals, changeover timelines, major service intervals, the check method, operational limits, usage cycles, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
-        "question": "What is the recommended approach for overhauling the starter motor assembly in terms of following manufacturer's guidelines?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "question": "What is the basis for determining the appropriate procedure to follow when overhauling a starter motor assembly, according to the given guidelines?",
+        "answer": "NOTICE: All checkup timelines, changeover timelines, overhaul cycles, the inspection procedure, lifespan thresholds, rotation limits, etc., endorsed by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs are not suitable and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, changeover timelines, overhaul cycles, the inspection procedure, lifespan thresholds, rotation limits, etc., for such non-Cessna parts must be obtained from the vendor or originator of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What information is provided to facilitate the overhaul process of starter motor assemblies from different manufacturers, such as TCM, in accordance with the given guidelines?",
+        "answer": "NOTICE: All checkup timelines, changeover timelines, major service intervals, the assessment technique, operational limits, cycle thresholds, etc., endorsed by Cessna are solely based on the use of new, remanufactured, or overhauled Cessna-certified components. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, changeover timelines, major service intervals, the assessment technique, operational limits, cycle thresholds, etc., for such non-Cessna parts must be obtained from the vendor or originator of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What specific documentation is recommended for overhauling TCM starters, in addition to the general manufacturer's instructions?",
+        "answer": "ATTENTION: All inspection schedules, replacement periods, overhaul cycles, the assessment technique, durability limits, usage cycles, etc., specified by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All inspection schedules, replacement periods, overhaul cycles, the assessment technique, durability limits, usage cycles, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What instructions should be followed to overhaul the starter motor assembly?",
+        "answer": "NOTICE: All checkup timelines, replacement periods, refurbishment limits, the inspection procedure, lifespan thresholds, rotation limits, etc., specified by Cessna are solely based on the use of new, remanufactured, or overhauled certified Cessna parts. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by non-Cessna organizations, then the data in Cessna’s maintenance/service manuals and parts catalogs are not suitable and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, replacement periods, refurbishment limits, the inspection procedure, lifespan thresholds, rotation limits, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "For overhauling a TCM starter motor assembly, where can the relevant overhaul instructions be found?",
+        "answer": "IMPORTANT NOTICE: All inspection schedules, replacement periods, refurbishment limits, the inspection procedure, durability limits, rotation limits, etc., endorsed by Cessna are solely based on the use of new, remanufactured, or overhauled parts approved by Cessna. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All inspection schedules, replacement periods, refurbishment limits, the inspection procedure, durability limits, rotation limits, etc., for such non-Cessna parts must be obtained from the vendor or originator of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     },
     {
         "chapter": null,
         "title": "STARTER MOTOR OVERHAUL",
         "question": "What is the relationship between TCM Form X30592 and the manufacturer's instructions for overhauling a TCM starter motor assembly?",
-        "answer": "1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+        "answer": "NOTICE: All maintenance intervals, part replacement schedules, overhaul cycles, the assessment technique, lifespan thresholds, rotation limits, etc., set by Cessna are solely based on the use of new, remanufactured, or overhauled Cessna-certified components. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by third-party suppliers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All maintenance intervals, part replacement schedules, overhaul cycles, the assessment technique, lifespan thresholds, rotation limits, etc., for such non-Cessna parts must be obtained from the supplier or maker of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "What is the recommended approach for overhauling the starter motor assembly in terms of following manufacturer's guidelines?",
+        "answer": "ATTENTION: All maintenance intervals, part replacement schedules, major service intervals, the assessment technique, durability limits, rotation limits, etc., specified by Cessna are solely based on the use of new, remanufactured, or overhauled parts approved by Cessna. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs do not apply and the purchaser is warned not to rely on such data for non-Cessna parts. All maintenance intervals, part replacement schedules, major service intervals, the assessment technique, durability limits, rotation limits, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
+    },
+    {
+        "chapter": null,
+        "title": "STARTER MOTOR OVERHAUL",
+        "question": "In accordance with the provided guidelines, where should one look for specific instructions when the starter motor in question is a TCM starter, as opposed to another type of starter motor assembly?",
+        "answer": "CAUTION: All checkup timelines, replacement periods, overhaul cycles, the check method, durability limits, rotation limits, etc., endorsed by Cessna are solely based on the use of new, remanufactured, or overhauled parts approved by Cessna. If parts are designed, manufactured, remanufactured, overhauled, purchased, and/or approved by external manufacturers, then the data in Cessna’s maintenance/service manuals and parts catalogs are not suitable and the purchaser is warned not to rely on such data for non-Cessna parts. All checkup timelines, replacement periods, overhaul cycles, the check method, durability limits, rotation limits, etc., for such non-Cessna parts must be obtained from the producer or distributor of such non-Cessna parts.\n\n1. The starter motor assembly must be overhauled in accordance with the manufacturer's\ninstructions. See TCM Form X30592 for TCM starters. See section 1-5, \"Related\nPublications,\" for ordering information."
     }
 ]
