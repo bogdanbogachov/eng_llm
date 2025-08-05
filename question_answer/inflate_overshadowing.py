@@ -26,12 +26,12 @@ def sort_json_by_title_and_answer(input_path: str, output_path: str) -> None:
     return None
 
 
-def inflate_qa_answers_with_file_inputs(qa_path: str, inflating_path: str):
+def inflate_qa_answers_with_file_inputs(qa_original_path: str, inflating_path: str, qa_output_path: str):
     # Sort the QAs by title and answer
-    sort_json_by_title_and_answer(qa_path, qa_path)
+    sort_json_by_title_and_answer(qa_original_path, qa_output_path)
 
     # Load data from files
-    with open(qa_path, "r", encoding="utf-8") as f:
+    with open(qa_output_path, "r", encoding="utf-8") as f:
         qa_data = json.load(f)
 
     with open(inflating_path, "r", encoding="utf-8") as f:
@@ -60,7 +60,7 @@ def inflate_qa_answers_with_file_inputs(qa_path: str, inflating_path: str):
     # Flatten back into a list
     result = [qa for qas in title_to_qas.values() for qa in qas]
 
-    with open(qa_path, "w", encoding="utf-8") as outfile:
+    with open(qa_output_path, "w", encoding="utf-8") as outfile:
         json.dump(result, outfile, indent=4)
 
     return None

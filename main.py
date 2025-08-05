@@ -49,8 +49,9 @@ if __name__ == '__main__':
 
     if args.inflate_overshadowing:
         from question_answer import inflate_qa_answers_with_file_inputs
-        inflate_qa_answers_with_file_inputs("question_answer/qa.json",
-                                            "question_answer/inflating_material.json")
+        inflate_qa_answers_with_file_inputs("question_answer/qa_original.json",
+                                            "question_answer/inflating_material.json",
+                                            "question_answer/qa.json")
 
 
     if args.split_qa:
@@ -64,7 +65,7 @@ if __name__ == '__main__':
         compute_overshadowing(prefix_length=20)
 
     # Experiments
-    experiment = 'j_la_64'
+    experiment = 'j_os_la_64'
     # Finetune
     if args.finetune:
         from finetune import finetune
