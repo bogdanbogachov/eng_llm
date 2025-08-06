@@ -65,7 +65,7 @@ if __name__ == '__main__':
         compute_overshadowing(prefix_length=20)
 
     # Experiments
-    experiment = 'j_os_la_64'
+    experiment = 'j_os3_la_64'
     # Finetune
     if args.finetune:
         from finetune import finetune

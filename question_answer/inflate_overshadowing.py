@@ -46,16 +46,22 @@ def inflate_qa_answers_with_file_inputs(qa_original_path: str, inflating_path: s
         title = entry.get("title", "")
         title_to_qas.setdefault(title, []).append(entry)
 
-    # Prepend inflating text to answers
+    # Assign inflation per distinct answer per title
     for title in sorted(title_to_qas.keys()):
+        answer_to_inflation = {}
         inflating_index = 0
+
         for qa in title_to_qas[title]:
-            if inflating_index < inflating_count:
-                inflating_text = inflating_texts[inflating_index]
-                qa["answer"] = f"{inflating_text}\n\n{qa['answer']}"
+            answer_text = qa["answer"]
+
+            if answer_text not in answer_to_inflation:
+                if inflating_index >= inflating_count:
+                    raise IndexError(f"Not enough inflating texts for title: {title}")
+                answer_to_inflation[answer_text] = inflating_texts[inflating_index]
                 inflating_index += 1
-            else:
-                raise IndexError(f"Not enough inflating texts for title: {title}")
+
+            inflating_text = answer_to_inflation[answer_text]
+            qa["answer"] = f"{inflating_text}\n\n{answer_text}"
 
     # Flatten back into a list
     result = [qa for qas in title_to_qas.values() for qa in qas]
