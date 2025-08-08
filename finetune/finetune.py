@@ -102,7 +102,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     training_args = TrainingArguments(
         output_dir=f"checkpoints/{experiment_number}/{adapter_name}",
-        num_train_epochs=25,
+        num_train_epochs=10,
 
         eval_strategy="epoch",
         # eval_steps=100,
