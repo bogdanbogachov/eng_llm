@@ -10,7 +10,7 @@ open_ai_api_key: "key"
 # HF call model parameters
 max_new_tokens: 750
 seed: 42
-temperature: 0.5
+temperature: 0.1
 
 # Question-answer creation prompts
 system_prompt: >
