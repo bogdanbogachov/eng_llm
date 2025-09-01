@@ -62,10 +62,10 @@ if __name__ == '__main__':
     # Measure data overlap
     if args.data_overlap_check:
         from evaluate import compute_overshadowing
-        compute_overshadowing(prefix_length=20)
+        compute_overshadowing(prefix_length=5)
 
     # Experiments
-    experiment = 'j_os3_la_64'
+    experiment = 'j_1_wur_01'
     # Finetune
     if args.finetune:
         from finetune import finetune
