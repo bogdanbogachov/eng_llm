@@ -85,7 +85,7 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
 
     # Define training arguments
     peft_params = LoraConfig(
-        lora_alpha=8,
+        lora_alpha=128,
         lora_dropout=0.05,
         r=16,
         task_type='CAUSAL_LM'
@@ -115,18 +115,18 @@ def finetune(model_to_tune, adapter_name, data, experiment_number, slg=False, or
         fp16=True,
         report_to="tensorboard",
         log_level="info",
-        logging_dir="logs_experiment_name",
+        logging_dir="j_1_wd_0",
 
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
 
         learning_rate=learning_rate,
-        weight_decay=0.001,
+        weight_decay=0,
         adam_beta1=0.9,
         adam_beta2=0.999,
         max_grad_norm=0.5,
-        warmup_ratio=0.03,
-        lr_scheduler_type='linear',
+        warmup_ratio=0.05,
+        lr_scheduler_type='cosine',
         gradient_accumulation_steps=2,
         optim='adamw_torch',
         label_smoothing_factor=label_smoothing_factor,
